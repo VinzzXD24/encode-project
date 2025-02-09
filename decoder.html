@@ -116,7 +116,7 @@
   
   <script>
     // ===========================================================
-    // Bagian 1: Array Label Obfuscated (Internal, tidak ditampilkan)
+    // Part 1: Internal Obfuscated Labels (Tidak ditampilkan)
     // ===========================================================
     var _0x3df1 = [
       "Base64",      // 0
@@ -147,23 +147,19 @@
     }
     
     // ===========================================================
-    // Bagian 2: Fungsi-Fungsi Encoding Dasar
+    // Part 2: Basic Encoding Functions
     // ===========================================================
-    
     function encodeBase64(str) {
       return btoa(str);
     }
-    
     function encodeCharCodes(str) {
       return str.split("").map(function(ch) {
         return ch.charCodeAt(0);
       }).join(" ");
     }
-    
     function encodeURL(str) {
       return encodeURIComponent(str);
     }
-    
     var morseMap = {
       'A': ".-", 'B': "-...", 'C': "-.-.", 'D': "-..",
       'E': ".", 'F': "..-.", 'G': "--.", 'H': "....",
@@ -181,13 +177,11 @@
         return (ch === " ") ? "/" : (morseMap[ch] || ch);
       }).join(" ");
     }
-    
     function encodeBinary(str) {
       return str.split("").map(function(ch) {
         return ch.charCodeAt(0).toString(2).padStart(8, "0");
       }).join(" ");
     }
-    
     function encodeRot13(str) {
       return str.replace(/[a-zA-Z]/g, function(c) {
         var code = c.charCodeAt(0) + 13;
@@ -199,13 +193,11 @@
         return c;
       });
     }
-    
     function encodeHex(str) {
       return str.split("").map(function(ch) {
         return ch.charCodeAt(0).toString(16).padStart(2, "0");
       }).join(" ");
     }
-    
     function encodeAtbash(str) {
       var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       var reversed = alphabet.split("").reverse().join("");
@@ -219,7 +211,6 @@
         return ch;
       }).join("");
     }
-    
     function encodeBase85(str) {
       var bytes = [];
       for (var i = 0; i < str.length; i++) {
@@ -247,7 +238,6 @@
       }
       return result;
     }
-    
     function encodeBase91(str) {
       var b = 0, n = 0, out = "";
       var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~\"";
@@ -267,15 +257,12 @@
       }
       return out;
     }
-    
     function encodeJSObfuscate(str) {
       return btoa(str.split("").reverse().join(""));
     }
-    
     function encodePunycode(str) {
       return "xn--" + encodeHex(str);
     }
-    
     function encodeBrainfuck(str) {
       var bf = "";
       for (var i = 0; i < str.length; i++) {
@@ -284,7 +271,6 @@
       }
       return bf;
     }
-    
     function encodeBase4096(str) {
       var bits = "";
       for (var i = 0; i < str.length; i++) {
@@ -300,7 +286,6 @@
       }
       return res;
     }
-    
     function encodeDNA(str) {
       var mapping = {"00": "A", "01": "C", "10": "G", "11": "T"};
       var res = "";
@@ -315,7 +300,7 @@
     }
     
     // ===========================================================
-    // Bagian 3: Metode Netcyzen (AES-256, RSA-4096, Quantum Crypto)
+    // Part 3: Netcyzen Methods (AES-256, RSA-4096, Quantum Crypto)
     // ===========================================================
     async function encodeAES256(str, key) {
       const enc = new TextEncoder();
@@ -335,7 +320,6 @@
       );
       return btoa(String.fromCharCode(...new Uint8Array(encrypted))) + '.' + btoa(String.fromCharCode(...iv));
     }
-    
     async function encodeRSA4096(str) {
       const keyPair = await window.crypto.subtle.generateKey(
         { name: "RSA-OAEP", modulusLength: 4096, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" },
@@ -350,7 +334,6 @@
       );
       return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
     }
-    
     function encodeQuantumCrypto(str) {
       return str.split('').map(char => {
         let quantumCode = char.charCodeAt(0) * Math.random() * 1000;
@@ -359,10 +342,9 @@
     }
     
     // ===========================================================
-    // Bagian 4: Proses Pengumpulan Hasil Encoding
+    // Part 4: Encoding Process Collection
     // ===========================================================
-    
-    // Encode Full Power: Gunakan semua fungsi encoder dasar
+    // Encode Full Power: Use all basic encoding functions
     async function processEncodingsFull(input) {
       var results = [];
       try { results.push(encodeBase64(input)); } catch(e) { results.push("Err:" + e.message); }
@@ -382,8 +364,7 @@
       try { results.push(encodeDNA(input)); } catch(e) { results.push("Err:" + e.message); }
       return results;
     }
-    
-    // Encode Netcyzen: Gunakan metode AES-256, RSA-4096, dan Quantum Crypto
+    // Encode Netcyzen: Use Netcyzen methods (AES-256, RSA-4096, Quantum Crypto)
     async function processEncodingsNetcyzen(input) {
       var results = [];
       try { results.push(await encodeAES256(input, "secretKey")); } catch(e) { results.push("Err:" + e.message); }
@@ -391,24 +372,21 @@
       try { results.push(encodeQuantumCrypto(input)); } catch(e) { results.push("Err:" + e.message); }
       return results;
     }
-    
     // Versi Array Yang Di Loop Terus:
     // Lakukan proses Encode Full Power sebanyak 5 kali dan gabungkan hasilnya
     async function processEncodingsLoop(input) {
       var loopResults = [];
       for (let i = 0; i < 5; i++) {
         let r = await processEncodingsFull(input);
-        // Gunakan advancedCombineEncodings untuk mengubah array hasil encoding menjadi string
-        loopResults.push(advancedCombineEncodings(r));
+        loopResults.push(advancedCombineEncodingsLoop(r));
       }
       return loopResults.join("\n");
     }
-    
     function combineEncodings(results) {
       var take = 4;
       return results.map(function(r) { return r.substr(0, take); }).join("");
     }
-    
+    // Fungsi advancedCombineEncodings untuk opsi Full dan Netcyzen (tetap)
     function advancedCombineEncodings(results) {
       var basic = combineEncodings(results);
       var chars = basic.split("");
@@ -418,25 +396,25 @@
         chars[i] = chars[j];
         chars[j] = tmp;
       }
-      var obfus = chars.map(function(ch) {
-        var hx = ch.charCodeAt(0).toString(16);
-        var rev = hx.split("").reverse().join("");
-        var rand = ["x", "y", "z"][Math.floor(Math.random() * 3)];
-        return rev + rand;
-      });
-      var delims = ["|", "*", "#"];
-      for (var i = delims.length - 1; i > 0; i--) {
+      // Hasilnya tidak diberi prefix/suffix khusus
+      return chars.join("");
+    }
+    // Fungsi advancedCombineEncodingsLoop untuk opsi "Versi Array Yang Di Loop Terus"
+    // Output: "0x" + [hasil pengacakan] + "bs"
+    function advancedCombineEncodingsLoop(results) {
+      var basic = combineEncodings(results);
+      var chars = basic.split("");
+      for (var i = chars.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
-        var tmp = delims[i];
-        delims[i] = delims[j];
-        delims[j] = tmp;
+        var tmp = chars[i];
+        chars[i] = chars[j];
+        chars[j] = tmp;
       }
-      var delim = delims.join("");
-      return obfus.join(delim);
+      return "0x" + chars.join("") + "bs";
     }
     
     // ===========================================================
-    // Bagian 5: Event Listener dan Clipboard
+    // Part 5: Event Listeners and Clipboard
     // ===========================================================
     document.getElementById("encodeButton").addEventListener("click", async function() {
       try {
