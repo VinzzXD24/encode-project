@@ -5,26 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Custom Obfuscator (String Literals Only)</title>
   <style>
+    /* Contoh CSS untuk tampilan */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       background: #f4f4f4;
     }
-    textarea {
+    textarea, pre {
       width: 100%;
-      height: 200px;
-      margin-bottom: 10px;
       font-family: monospace;
       font-size: 14px;
       padding: 10px;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    textarea {
+      height: 200px;
     }
     pre {
       background: #e0e0e0;
-      padding: 10px;
       white-space: pre-wrap;
       word-wrap: break-word;
-      font-family: monospace;
-      font-size: 14px;
     }
     button {
       padding: 10px 15px;
@@ -34,8 +35,8 @@
   </style>
 </head>
 <body>
-  <h1>Custom Obfuscator (Obfuscate String Literals)</h1>
-  <textarea id="inputCode" placeholder="Masukkan kode JavaScript di sini..."></textarea>
+  <h1>Custom Obfuscator (Obfuscate Literal Strings Saja)</h1>
+  <textarea id="inputCode" placeholder="Masukkan kode JavaScript/HTML di sini..."></textarea>
   <br>
   <button onclick="obfuscateCode()">Obfuscate</button>
   <h2>Output Code:</h2>
@@ -43,26 +44,35 @@
 
   <script>
     function obfuscateCode() {
-      const input = document.getElementById("inputCode").value;
+      let input = document.getElementById("inputCode").value;
       if (!input.trim()) {
         alert("Masukkan kode terlebih dahulu!");
         return;
       }
       
-      // Regex untuk mencocokkan literal string (kutipan tunggal, ganda, atau backtick)
-      const regex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
-      const matches = input.match(regex) || [];
+      // --- Langkah 1: Pisahkan blok CSS agar tidak diubah ---
+      // Cari blok <style>...</style> (non-greedy)
+      const styleRegex = /<style[\s\S]*?<\/style>/gi;
+      let styleBlocks = [];
+      input = input.replace(styleRegex, function(match) {
+        // Simpan blok CSS ke array dan gantikan dengan placeholder
+        const placeholder = `%%%STYLE_BLOCK_${styleBlocks.length}%%%`;
+        styleBlocks.push(match);
+        return placeholder;
+      });
       
-      // Kumpulkan literal string unik
-      const uniqueStrings = [];
-      const stringMap = {};
+      // --- Langkah 2: Obfuscate literal string di bagian non-CSS ---
+      // Regex untuk mencocokkan literal string (tanda kutip tunggal, ganda, atau backtick)
+      const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
+      const matches = input.match(stringRegex) || [];
+      
+      // Kumpulkan literal string unik (tanpa tanda kutip)
+      let uniqueStrings = [];
+      let stringMap = {};
       matches.forEach(str => {
-        if (stringMap.hasOwnProperty(str)) {
-          // Sudah ada, lewati
-        } else {
+        if (!(str in stringMap)) {
+          // Simpan nilai string tanpa pembatas
           stringMap[str] = uniqueStrings.length;
-          // Hapus pembatas (kutipan) agar nilai string murni disimpan;
-          // nanti akan dikonversi ulang dengan JSON.stringify saat deklarasi array.
           uniqueStrings.push(str.slice(1, -1));
         }
       });
@@ -72,7 +82,7 @@
         uniqueStrings.map(s => JSON.stringify(s)).join(', ') +
         '];\n';
       
-      // Ganti seluruh literal string pada kode dengan referensi ke _0x3df1[index]
+      // Ganti seluruh literal string pada kode (selain blok CSS yang sudah diplaceholder)
       let obfuscatedCode = input;
       for (const original in stringMap) {
         // Escape karakter khusus agar aman dalam regex
@@ -81,7 +91,13 @@
         obfuscatedCode = obfuscatedCode.replace(pattern, `_0x3df1[${stringMap[original]}]`);
       }
       
-      // Gabungkan deklarasi array dan kode yang telah diobfuscate
+      // --- Langkah 3: Kembalikan blok CSS ke tempatnya ---
+      styleBlocks.forEach((block, index) => {
+        const placeholder = `%%%STYLE_BLOCK_${index}%%%`;
+        obfuscatedCode = obfuscatedCode.replace(placeholder, block);
+      });
+      
+      // Gabungkan deklarasi array dengan kode yang telah diobfuscate
       const finalCode = arrayCode + obfuscatedCode;
       document.getElementById("outputCode").textContent = finalCode;
     }
