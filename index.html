@@ -7,6 +7,7 @@
   <!-- Menggunakan Google Fonts untuk tampilan modern -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
   <style>
+    /* Tampilan Umum */
     body {
       margin: 0;
       padding: 20px;
@@ -95,12 +96,321 @@
     <pre id="outputText"></pre>
   </div>
   
-  <!-- Kode JavaScript di bawah ini telah di-obfuscate -->
   <script>
-    (function(){
-      var encodedJS = "YXN5bmMgZnVuY3Rpb24gcHJvY2Vzc0VuY29kaW5nKGlucHV0KSB7CiAgICAvLyBTaW11bGF0ZSBwcm9jZXNzaW5nIGRlbGF5ICh0aGlzIHdpbGwgY2h1bmsgdGhlIGxvYWRpbmcgc3Bpbm5lci4KICAgIHJldHVybiBuZXcgUHJvbWlzZShyZXNvbHZlID0+IHsgCiAgICAgICAgc2V0VGltZW91dCgoKSA9PiB7CiAgICAgICAgICAgIHJlc29sdmUoIkVuY29kZWQgOiAke2lucHV0fSIpOwogICAgICAgIH0sIDIwMDApOwAgICAgIH0pOwp9CgpmdW5jdGlvbiBwcm9jZXNzRW5jb2RpbmdzKGkpIHsKICAgIHJldHVybiBwcm9jZXNzRW5jb2RpbmdzKHRoaXMpOwB9CgpmdW5jdGlvbiBwcm9jZXNzRW5jb2RpbmdzKHRleHQpIHsKICAgIHJldHVybiBwcm9jZXNzRW5jb2RpbmdzKHRleHQpOwB9Cgpkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiZW5jb2RlQnV0dG9uIikuYWRkRXZlbnRMaXN0ZW5lcigic2V0Q2xpY2siLCBhc3luYyBmdW5jdGlvbigpIHsKICAgIGNvbnN0IGlucHV0ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImlucHV0VGV4dCIpLnZhbHVlOwogICAgY29uc3QgbG9hZGluZ0VsZW0gPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgibG9hZGluZyIpOwogICAgY29uc3Qgb3V0cHV0RWxlbSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJvdXRwdXRleHQiKTsKICAgIGxvYWRpbmdFbGVtLnN0eWxlLmRpc3BsYXkgPSAiYmxvY2siOyAvLyBTaG93IHRoZSBzcGlubmVyCiAgICBvdXRwdXRFbGVtLnRleHRDb250ZW50ID0gIiI7CiAgICBjb25zdCByZXN1bHQgPSBhd2FpdCBwcm9jZXNzRW5jb2RpbmdzKGlucHV0KTsKICAgIG91dXRwdXRFbGVtLnRleHRDb250ZW50ID0gcmVzdWx0OwogICAgbG9hZGluZ0VsZW0uc3R5bGUuZGlzcGxheSA9ICJub25lIjsgCn0pOwoKZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInBhc3RlQnV0dG9uIikuYWRkRXZlbnRMaXN0ZW5lcigic2V0Q2xpY2siLCBhc3luYyBmdW5jdGlvbigpIHsKICAgIGlmIChuYXZpZ2F0b3IuY2xpcGJvYXJkICYmIG5hdmlnYXRvci5jbGlwYm9hcmQucmVhZFRleHQpIHsKICAgICAgY29uc3QgdGV4dCA9IGF3YWl0IG5hdmlnYXRvci5jbGlwYm9hcmQucmVhZFRleHQoKTsKICAgICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImlucHV0VGV4dCIpLnZhbHVlID0gdGV4dDsKICAgIH0gZWxzZSB7CiAgICAgIGFsZXJ0KCJDbGlwYm9hcmQgQVBJIG5vdCBTdXBwb3J0ZWQuIik7CiAgICB9CiAgfSk7Cgpkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiY29weUJ1dG9uIikuYWRkRXZlbnRMaXN0ZW5lcigid2lyZVRleHQiLCBmdW5jdGlvbigpIHsKICAgIGNvbnN0IHRleHQgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgidXJ0ZXh0IikudGV4dENvbnRlbnQ7CiAgICBpZihuYXZpZ2F0b3IuY2xpcGJvYXJkICYmIG5hdmlnYXRvci5jbGlwYm9hcmQud3JpdGVUZXh0KSB7CiAgICAgIG5hdmlnYXRvci5jbGlwYm9hcmQud3JpdGVUZXh0KHRleHQpOwogICAgfSBlbHNlIHsKICAgICAgYWxlcnQoIkNsaXBiYXJkIEFQSSBub3QgU3VwcG9ydGVkLiIpOwogICAgfQogIH0pOwoKZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImNvcHlCdXR0b24iKS5hZGRFdmVudExpc3RlbmVyKGZ1bmN0aW9uKCkgewogICAgY29uc3QgdGV4dCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJvdXRwdXRleHQiKS50ZXh0Q29udGVudDsKICAgIGlmIChuYXZpZ2F0b3IuY2xpcGJvYXJkICYmIG5hdmlnYXRvci5jbGlwYm9hcmQud3JpdGVUZXh0KSB7CiAgICAgIG5hdmlnYXRvci5jbGlwYm9hcmQud3JpdGVUZXh0KHRleHQpOwogICAgfSBlbHNlIHsKICAgICAgYWxlcnQoIkNsaXBiYXJkIEFQSSBub3QgU3VwcG9ydGVkLiIpOwogICAgfQogIH0pOwp9KTs=";
-      eval(atob(encodedJS));
-    })();
+    // ===========================================================
+    // Bagian 1: Array Label Obfuscated (Internal, tidak ditampilkan)
+    // ===========================================================
+    var _0x3df1 = [
+      "Base64",              // 0
+      "CharCodes",           // 1
+      "URL",                 // 2
+      "Morse",               // 3
+      "Binary",              // 4
+      "Rot13",               // 5
+      "Hex",                 // 6
+      "Atbash",              // 7
+      "Base85",              // 8
+      "Base91",              // 9
+      "JSObfuscate",         // 10
+      "Punycode",            // 11
+      "Brainfuck",           // 12
+      "Base4096",            // 13
+      "DNA"                  // 14
+    ];
+    (function(arr, shift) {
+      var inner = function(num) {
+        while (--num) { arr.push(arr.shift()); }
+      };
+      inner(++shift);
+    }(_0x3df1, 0x3));
+    function _0x37b7(index) {
+      index = index - 0;
+      return _0x3df1[index];
+    }
+    
+    // ===========================================================
+    // Bagian 2: Fungsi-Fungsi Multi Encoding
+    // ===========================================================
+    
+    function encodeBase64(str) {
+      return btoa(str);
+    }
+    
+    function encodeCharCodes(str) {
+      return str.split("").map(function(ch) {
+        return ch.charCodeAt(0);
+      }).join(" ");
+    }
+    
+    function encodeURL(str) {
+      return encodeURIComponent(str);
+    }
+    
+    var morseMap = {
+      'A': ".-", 'B': "-...", 'C': "-.-.", 'D': "-..",
+      'E': ".", 'F': "..-.", 'G': "--.", 'H': "....",
+      'I': "..", 'J': ".---", 'K': "-.-", 'L': ".-..",
+      'M': "--", 'N': "-.", 'O': "---", 'P': ".--.",
+      'Q': "--.-", 'R': ".-.", 'S': "...", 'T': "-",
+      'U': "..-", 'V': "...-", 'W': ".--", 'X': "-..-",
+      'Y': "-.--", 'Z': "--..",
+      '0': "-----", '1': ".----", '2': "..---", '3': "...--",
+      '4': "....-", '5': ".....", '6': "-....", '7': "--...",
+      '8': "---..", '9': "----."
+    };
+    function encodeMorse(str) {
+      return str.toUpperCase().split("").map(function(ch) {
+        return (ch === " ") ? "/" : (morseMap[ch] || ch);
+      }).join(" ");
+    }
+    
+    function encodeBinary(str) {
+      return str.split("").map(function(ch) {
+        return ch.charCodeAt(0).toString(2).padStart(8, "0");
+      }).join(" ");
+    }
+    
+    function encodeRot13(str) {
+      return str.replace(/[a-zA-Z]/g, function(c) {
+        var code = c.charCodeAt(0) + 13;
+        if (c >= 'A' && c <= 'Z') {
+          return String.fromCharCode((code <= 90 ? code : code - 26));
+        } else if (c >= 'a' && c <= 'z') {
+          return String.fromCharCode((code <= 122 ? code : code - 26));
+        }
+        return c;
+      });
+    }
+    
+    function encodeHex(str) {
+      return str.split("").map(function(ch) {
+        return ch.charCodeAt(0).toString(16).padStart(2, "0");
+      }).join(" ");
+    }
+    
+    function encodeAtbash(str) {
+      var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      var reversed = alphabet.split("").reverse().join("");
+      return str.split("").map(function(ch) {
+        var upper = ch.toUpperCase();
+        var idx = alphabet.indexOf(upper);
+        if (idx !== -1) {
+          var newChar = reversed[idx];
+          return (ch === ch.toUpperCase()) ? newChar : newChar.toLowerCase();
+        }
+        return ch;
+      }).join("");
+    }
+    
+    function encodeBase85(str) {
+      var bytes = [];
+      for (var i = 0; i < str.length; i++) {
+        bytes.push(str.charCodeAt(i));
+      }
+      var padding = (4 - (bytes.length % 4)) % 4;
+      for (var i = 0; i < padding; i++) {
+        bytes.push(0);
+      }
+      var result = "";
+      for (var i = 0; i < bytes.length; i += 4) {
+        var num = ((bytes[i] << 24) >>> 0) | (bytes[i + 1] << 16) | (bytes[i + 2] << 8) | (bytes[i + 3]);
+        if (num === 0) {
+          result += "z";
+        } else {
+          var block = "";
+          var divisor = Math.pow(85, 4);
+          for (var j = 0; j < 5; j++) {
+            var digit = Math.floor(num / divisor) % 85;
+            block += String.fromCharCode(digit + 33);
+            divisor /= 85;
+          }
+          result += block;
+        }
+      }
+      return result;
+    }
+    
+    function encodeBase91(str) {
+      var b = 0, n = 0, out = "";
+      var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~\"";
+      for (var i = 0; i < str.length; i++) {
+        b |= str.charCodeAt(i) << n;
+        n += 8;
+        if (n > 13) {
+          var v = b & 8191;
+          if (v > 88) { b >>= 13; n -= 13; }
+          else { v = b & 16383; b >>= 14; n -= 14; }
+          out += alphabet[v % 91] + alphabet[Math.floor(v / 91)];
+        }
+      }
+      if (n) {
+        out += alphabet[b % 91];
+        if (n > 7 || b > 90) { out += alphabet[Math.floor(b / 91)]; }
+      }
+      return out;
+    }
+    
+    function encodeJSObfuscate(str) {
+      return btoa(str.split("").reverse().join(""));
+    }
+    
+    function encodePunycode(str) {
+      return "xn--" + encodeHex(str);
+    }
+    
+    function encodeBrainfuck(str) {
+      var bf = "";
+      for (var i = 0; i < str.length; i++) {
+        var code = str.charCodeAt(i);
+        bf += "+".repeat(code) + ".";
+      }
+      return bf;
+    }
+    
+    function encodeBase4096(str) {
+      var bits = "";
+      for (var i = 0; i < str.length; i++) {
+        bits += str.charCodeAt(i).toString(2).padStart(8, "0");
+      }
+      var pad = (12 - (bits.length % 12)) % 12;
+      bits = bits.padEnd(bits.length + pad, "0");
+      var res = "";
+      for (var i = 0; i < bits.length; i += 12) {
+        var chunk = bits.substr(i, 12);
+        var num = parseInt(chunk, 2);
+        res += String.fromCharCode(num + 0x1000);
+      }
+      return res;
+    }
+    
+    function encodeDNA(str) {
+      var mapping = {"00": "A", "01": "C", "10": "G", "11": "T"};
+      var res = "";
+      for (var i = 0; i < str.length; i++) {
+        var bin = str.charCodeAt(i).toString(2).padStart(8, "0");
+        for (var j = 0; j < 8; j += 2) {
+          var pair = bin.substr(j, 2);
+          res += mapping[pair];
+        }
+      }
+      return res;
+    }
+    
+    // ===========================================================
+    // Bagian 3: Penggabungan Hasil Encoding
+    // ===========================================================
+    
+    function processEncodings(input) {
+      var results = [];
+      try { results.push(encodeBase64(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeCharCodes(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeURL(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeMorse(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBinary(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeRot13(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeHex(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeAtbash(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBase85(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBase91(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeJSObfuscate(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodePunycode(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBrainfuck(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBase4096(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeDNA(input)); } catch(e) { results.push("Err:" + e.message); }
+      return results;
+    }
+    
+    function combineEncodings(results) {
+      var take = 4;
+      return results.map(function(r) {
+        return r.substr(0, take);
+      }).join("");
+    }
+    
+    function advancedCombineEncodings(results) {
+      var basic = combineEncodings(results);
+      var chars = basic.split("");
+      // Acak urutan karakter
+      for (var i = chars.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = chars[i];
+        chars[i] = chars[j];
+        chars[j] = tmp;
+      }
+      var obfus = chars.map(function(ch) {
+        var hx = ch.charCodeAt(0).toString(16);
+        var rev = hx.split("").reverse().join("");
+        var rand = ["x", "y", "z"][Math.floor(Math.random() * 3)];
+        return rev + rand;
+      });
+      var delims = ["|", "*", "#"];
+      for (var i = delims.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = delims[i];
+        delims[i] = delims[j];
+        delims[j] = tmp;
+      }
+      var delim = delims.join("");
+      return obfus.join(delim);
+    }
+    
+    // ===========================================================
+    // Bagian 4: Event Listener dan Clipboard
+    // ===========================================================
+    document.getElementById("encodeButton").addEventListener("click", async function() {
+      try {
+        var inp = document.getElementById("inputText").value;
+        var outputArea = document.getElementById("outputText");
+        var loadingElem = document.getElementById("loading");
+        // Tampilkan spinner loading
+        loadingElem.style.display = "block";
+        outputArea.textContent = "";
+        // Proses encoding dengan delay 2 detik untuk menampilkan loading
+        var res = await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(processEncodings(inp));
+          }, 2000);
+        });
+        var out = advancedCombineEncodings(res);
+        outputArea.textContent = out;
+        // Sembunyikan loading
+        loadingElem.style.display = "none";
+      } catch (e) {
+        document.getElementById("outputText").textContent = "Err processing: " + e.message;
+        console.error(e);
+        document.getElementById("loading").style.display = "none";
+      }
+    });
+    
+    document.getElementById("pasteButton").addEventListener("click", async function() {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          var txt = await navigator.clipboard.readText();
+          document.getElementById("inputText").value = txt;
+        } else {
+          alert("Clipboard API not supported.");
+        }
+      } catch (e) {
+        alert("Paste error: " + e.message);
+      }
+    });
+    
+    document.getElementById("copyButton").addEventListener("click", function() {
+      try {
+        var outText = document.getElementById("outputText").textContent;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(outText).then(function() {
+            alert("Output copied to clipboard!");
+          }, function(err) {
+            alert("Failed to copy: " + err);
+          });
+        } else {
+          alert("Clipboard API not supported.");
+        }
+      } catch (e) {
+        alert("Copy error: " + e.message);
+      }
+    });
   </script>
 </body>
 </html>
