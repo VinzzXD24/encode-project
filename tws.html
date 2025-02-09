@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JavaScript Obfuscator - Array Mangle & String Split</title>
+    <title>JavaScript Obfuscator - Hex & Array Mangle</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; text-align: center; background: #1e1e1e; color: #fff; }
         textarea { width: 90%; height: 150px; margin: 10px 0; padding: 10px; background: #252526; color: #fff; border: 1px solid #444; }
@@ -14,7 +14,7 @@
 </head>
 <body>
 
-    <h2>JavaScript Obfuscator - Array Mangle & String Split</h2>
+    <h2>JavaScript Obfuscator - Hex & Array Mangle</h2>
     <textarea id="inputCode" placeholder="Masukkan kode JavaScript di sini..."></textarea>
     <br>
     <button onclick="obfuscateCode()">Obfuscate</button>
@@ -32,22 +32,24 @@
                 return;
             }
 
-            // Pisahkan string dalam kode
+            let randomHex = () => '_0x' + Math.floor(Math.random() * 65536).toString(16);
+            
+            // Ambil semua string dalam kode
             let stringMatches = input.match(/(["'`])(?:(?=(\\?))\2.)*?\1/g) || [];
-            let stringArray = stringMatches.map((s, i) => `s${i}`);
+            let stringArray = stringMatches.map((_, i) => randomHex());
             let stringData = stringMatches.map(s => s.replace(/"/g, '\\"'));
 
-            // Buat array string
-            let stringArrayCode = `const _strArr = ["${stringData.join('","')}"];`;
+            // Buat array string terenkripsi
+            let stringArrayCode = `const _0xarr = ["${stringData.join('","')}"];`;
 
             // Ganti string dengan referensi array
             stringMatches.forEach((str, index) => {
-                input = input.replace(new RegExp(str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "g"), `_strArr[${index}]`);
+                input = input.replace(new RegExp(str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "g"), `_0xarr[${index}]`);
             });
 
-            // Mangle fungsi dan variabel
-            input = input.replace(/function\s+(\w+)/g, (_, name) => `function _${name}`);
-            input = input.replace(/var\s+(\w+)/g, (_, name) => `var _${name}`);
+            // Ganti nama fungsi dan variabel dengan format _0xXXXX
+            let varRegex = /\b(var|let|const|function)\s+([a-zA-Z_]\w*)/g;
+            input = input.replace(varRegex, (_, type, name) => `${type} ${randomHex()}`);
 
             // Gabungkan semua dalam satu fungsi
             let finalCode = `(function() { ${stringArrayCode} ${input} })();`;
