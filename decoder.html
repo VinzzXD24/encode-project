@@ -43,6 +43,15 @@
       text-align: center;
       margin-bottom: 20px;
     }
+    select {
+      padding: 12px 20px;
+      font-size: 16px;
+      margin: 5px;
+      border-radius: 5px;
+      background: #444;
+      color: #fff;
+      border: 2px solid #555;
+    }
     button {
       padding: 12px 25px;
       font-size: 16px;
@@ -92,8 +101,13 @@
     <textarea id="inputText" rows="5" placeholder="Masukkan teks untuk diencode..."></textarea>
     <div class="buttons">
       <button id="pasteButton">Paste</button>
-      <button id="encodeFullButton">Encode Full</button>
-      <button id="encodeNetcyzenButton">Encode Netcyzen</button>
+      <!-- Dropdown untuk memilih metode encoding -->
+      <select id="encodeMethod">
+        <option value="full">Encode Full Power</option>
+        <option value="netcyzen">Encoder Versi Netcyzen</option>
+        <option value="loop">Versi Array Yang Di Loop Terus</option>
+      </select>
+      <button id="encodeButton">Encode</button>
       <button id="copyButton">Copy</button>
     </div>
     <div id="loading"></div>
@@ -105,21 +119,21 @@
     // Bagian 1: Array Label Obfuscated (Internal, tidak ditampilkan)
     // ===========================================================
     var _0x3df1 = [
-      "Base64",              // 0
-      "CharCodes",           // 1
-      "URL",                 // 2
-      "Morse",               // 3
-      "Binary",              // 4
-      "Rot13",               // 5
-      "Hex",                 // 6
-      "Atbash",              // 7
-      "Base85",              // 8
-      "Base91",              // 9
-      "JSObfuscate",         // 10
-      "Punycode",            // 11
-      "Brainfuck",           // 12
-      "Base4096",            // 13
-      "DNA"                  // 14
+      "Base64",      // 0
+      "CharCodes",   // 1
+      "URL",         // 2
+      "Morse",       // 3
+      "Binary",      // 4
+      "Rot13",       // 5
+      "Hex",         // 6
+      "Atbash",      // 7
+      "Base85",      // 8
+      "Base91",      // 9
+      "JSObfuscate", // 10
+      "Punycode",    // 11
+      "Brainfuck",   // 12
+      "Base4096",    // 13
+      "DNA"          // 14
     ];
     (function(arr, shift) {
       var inner = function(num) {
@@ -217,7 +231,7 @@
       }
       var result = "";
       for (var i = 0; i < bytes.length; i += 4) {
-        var num = ((bytes[i] << 24) >>> 0) | (bytes[i + 1] << 16) | (bytes[i + 2] << 8) | (bytes[i + 3]);
+        var num = ((bytes[i] << 24) >>> 0) | (bytes[i+1] << 16) | (bytes[i+2] << 8) | (bytes[i+3]);
         if (num === 0) {
           result += "z";
         } else {
@@ -348,7 +362,7 @@
     // Bagian 4: Proses Pengumpulan Hasil Encoding
     // ===========================================================
     
-    // Encode Full: Gunakan semua fungsi dasar
+    // Encode Full Power: Gunakan semua fungsi encoder dasar
     async function processEncodingsFull(input) {
       var results = [];
       try { results.push(encodeBase64(input)); } catch(e) { results.push("Err:" + e.message); }
@@ -369,13 +383,25 @@
       return results;
     }
     
-    // Encode Netcyzen: Gunakan metode AES-256, RSA-4096, Quantum Crypto
+    // Encode Netcyzen: Gunakan metode AES-256, RSA-4096, dan Quantum Crypto
     async function processEncodingsNetcyzen(input) {
       var results = [];
       try { results.push(await encodeAES256(input, "secretKey")); } catch(e) { results.push("Err:" + e.message); }
       try { results.push(await encodeRSA4096(input)); } catch(e) { results.push("Err:" + e.message); }
       try { results.push(encodeQuantumCrypto(input)); } catch(e) { results.push("Err:" + e.message); }
       return results;
+    }
+    
+    // Versi Array Yang Di Loop Terus:
+    // Lakukan proses Encode Full Power sebanyak 5 kali dan gabungkan hasilnya
+    async function processEncodingsLoop(input) {
+      var loopResults = [];
+      for (let i = 0; i < 5; i++) {
+        let r = await processEncodingsFull(input);
+        // Gunakan advancedCombineEncodings untuk mengubah array hasil encoding menjadi string
+        loopResults.push(advancedCombineEncodings(r));
+      }
+      return loopResults.join("\n");
     }
     
     function combineEncodings(results) {
@@ -412,43 +438,38 @@
     // ===========================================================
     // Bagian 5: Event Listener dan Clipboard
     // ===========================================================
-    document.getElementById("encodeFullButton").addEventListener("click", async function() {
+    document.getElementById("encodeButton").addEventListener("click", async function() {
       try {
         var inp = document.getElementById("inputText").value;
+        var method = document.getElementById("encodeMethod").value;
         var outputArea = document.getElementById("outputText");
         var loadingElem = document.getElementById("loading");
         loadingElem.style.display = "block";
         outputArea.textContent = "";
-        var res = await new Promise((resolve) => {
-          setTimeout(() => { resolve(processEncodingsFull(inp)); }, 2000);
-        });
-        var out = advancedCombineEncodings(res);
-        outputArea.textContent = out;
+        var res, out;
+        if (method === "full") {
+          res = await new Promise((resolve) => {
+            setTimeout(() => { resolve(processEncodingsFull(inp)); }, 2000);
+          });
+          out = advancedCombineEncodings(res);
+          outputArea.textContent = out;
+        } else if (method === "netcyzen") {
+          res = await new Promise((resolve) => {
+            setTimeout(() => { resolve(processEncodingsNetcyzen(inp)); }, 2000);
+          });
+          out = advancedCombineEncodings(res);
+          outputArea.textContent = out;
+        } else if (method === "loop") {
+          res = await new Promise((resolve) => {
+            setTimeout(() => { resolve(processEncodingsLoop(inp)); }, 2000);
+          });
+          outputArea.textContent = res;
+        }
         loadingElem.style.display = "none";
       } catch (e) {
-        outputArea.textContent = "Err processing: " + e.message;
+        document.getElementById("outputText").textContent = "Err processing: " + e.message;
         console.error(e);
-        loadingElem.style.display = "none";
-      }
-    });
-    
-    document.getElementById("encodeNetcyzenButton").addEventListener("click", async function() {
-      try {
-        var inp = document.getElementById("inputText").value;
-        var outputArea = document.getElementById("outputText");
-        var loadingElem = document.getElementById("loading");
-        loadingElem.style.display = "block";
-        outputArea.textContent = "";
-        var res = await new Promise((resolve) => {
-          setTimeout(() => { resolve(processEncodingsNetcyzen(inp)); }, 2000);
-        });
-        var out = advancedCombineEncodings(res);
-        outputArea.textContent = out;
-        loadingElem.style.display = "none";
-      } catch (e) {
-        outputArea.textContent = "Err processing: " + e.message;
-        console.error(e);
-        loadingElem.style.display = "none";
+        document.getElementById("loading").style.display = "none";
       }
     });
     
