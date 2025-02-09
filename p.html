@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Encoder/Decoder</title>
+    <style>
+________K2B1X4S1_{
+____________P8B1H4N0-P87GW9A6F2S1:_7GU3A67GF2YY_V67GH4V6-V6M1U3A6P8;
+____________W97GR4-O9A6X4N0Q3:_800L8R4;
+____________W97GU3Z5A6H4:_20L8R4_7GJ7N0B1;
+____________L87GX4X4A6H4Z5:_20L8R4;
+________}
+________XXD9B1H4N07GA6H4M1U3_{
+____________K2B1U3X4M1U3:_1L8R4_V6B1F2A6X4_#D9D9D9;
+____________L87GX4X4A6H4Z5:_20L8R4;
+____________K2B1U3X4M1U3-U37GX4A6J7V6:_5L8R4;
+________}
+________N0M1R4N07GU3M17G_{
+____________O9A6X4N0Q3:_100%;
+____________Q3M1A6Z5Q3N0:_150L8R4;
+____________W97GU3Z5A6H4:_10L8R4_0;
+________}
+________K2J7N0N0B1H4_{
+____________K27GD9T7Z5U3B1J7H4X4-D9B1F2B1U3:_#4D97GP850;
+____________D9B1F2B1U3:_O9Q3A6N0M1;
+____________L87GX4X4A6H4Z5:_10L8R4_20L8R4;
+____________K2B1U3X4M1U3:_H4B1H4M1;
+____________K2B1U3X4M1U3-U37GX4A6J7V6:_4L8R4;
+____________D9J7U3V6B1U3:_L8B1A6H4N0M1U3;
+________}
+________K2J7N0N0B1H4:Q3B1C2M1U3_{
+____________K27GD9T7Z5U3B1J7H4X4-D9B1F2B1U3:_#457G049;
+________}
+____</style>
+</head>
+<body>
+    <div class="container">
+        <h2>HTML Encoder/Decoder</h2>
+        <textarea id="input" placeholder="Masukkan HTML di sini..."></textarea><br>
+        <button>M1H4D9B1X4M1</button>
+        <button>X4M1D9B1X4M1</button>
+        <h3>Hasil:</h3>
+        <pre id="output"></pre>
+    </div>
+
+    <script>
+        // Mapping substitusi untuk encoding
+        const encodeMap = {
+            'a': '7G', 'b': 'K2', 'c': 'D9', 'd': 'X4', 'e': 'M1', 'f': 'P8', 'g': 'Z5', 'h': 'Q3', 
+            'i': 'A6', 'j': 'E0', 'k': 'T7', 'l': 'F2', 'm': 'W9', 'n': 'H4', 'o': 'B1', 'p': 'L8',
+            'q': 'Y5', 'r': 'U3', 's': 'V6', 't': 'N0', 'u': 'J7', 'v': 'C2', 'w': 'O9', 'x': 'R4',
+            'y': 'S1', 'z': 'I8', ' ': '_', '.': 'XX', ',': 'YY'
+        };
+
+        const decodeMap = Object.fromEntries(Object.entries(encodeMap).map(([k, v]) => [v, k]));
+
+        // Elemen yang tidak boleh dienkripsi
+        const excludeTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'title', 'strong', 'b', 'i', 'u'];
+
+        function encodeHTML() {
+            const inputHTML = document.getElementById('input').value;
+
+            // Enkripsi hanya teks dalam tag yang diizinkan
+            const encodedHTML = inputHTML.replace(/<(\w+)[^>]*>([^<>]+)<\/\1>/g, (match, tag, content) => {
+                if (excludeTags.includes(tag.toLowerCase())) {
+                    return match; // Jangan enkripsi elemen penting
+                }
+                return `<${tag}>` + encodeText(content) + `</${tag}>`;
+            });
+
+            document.getElementById('output').innerText = encodedHTML;
+        }
+
+        function decodeHTML() {
+            const inputHTML = document.getElementById('input').value;
+
+            // Dekripsi hanya teks yang telah dienkripsi sebelumnya
+            const decodedHTML = inputHTML.replace(/<(\w+)[^>]*>([^<>]+)<\/\1>/g, (match, tag, content) => {
+                if (excludeTags.includes(tag.toLowerCase())) {
+                    return match; // Jangan ubah elemen penting
+                }
+                return `<${tag}>` + decodeText(content) + `</${tag}>`;
+            });
+
+            document.getElementById('output').innerText = decodedHTML;
+        }
+
+        function encodeText(text) {
+            let encoded = '';
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i].toLowerCase();
+                encoded += encodeMap[char] || char; // Encode hanya yang ada di map
+            }
+            return encoded;
+        }
+
+        function decodeText(text) {
+            let decoded = '';
+            let i = 0;
+            while (i < text.length) {
+                const chunk = text.substr(i, 2);
+                if (decodeMap[chunk]) {
+                    decoded += decodeMap[chunk];
+                    i += 2;
+                } else {
+                    decoded += text[i];
+                    i++;
+                }
+            }
+            return decoded;
+        }
+    </script>
+</body>
+</html>
