@@ -23,6 +23,7 @@
       padding: 10px 15px;
       font-size: 14px;
       cursor: pointer;
+      margin-right: 5px;
     }
     #loading {
       display: none;
@@ -48,6 +49,7 @@
   <textarea id="inputCode" placeholder="Masukkan kode JavaScript/HTML di sini..."></textarea>
   <br>
   <button id="encodeButton">Encode</button>
+  <button id="copyButton">Copy ke Clipboard</button>
   <div id="loading">
     <div class="spinner"></div>
     <p>Loading...</p>
@@ -56,7 +58,7 @@
   <pre id="outputCode"></pre>
 
   <script>
-    // Menghasilkan nama acak dengan format _0xXXXXXX
+    // Fungsi untuk menghasilkan nama acak dengan format _0xXXXXXX
     function generateRandomName() {
       let hex = Math.floor(Math.random() * 0x1000000).toString(16);
       hex = ('000000' + hex).slice(-6);
@@ -64,11 +66,7 @@
     }
 
     // Fungsi untuk meng-escape literal string sesuai format:
-    // - Spasi → \x20
-    // - Newline → \x0a
-    // - Double quote → \x22
-    // - Single quote → \x27
-    // - Backslash → \\
+    // Spasi → \x20, Newline → \x0a, Double quote → \x22, Single quote → \x27, Backslash → \\
     function customEscape(str) {
       return str.replace(/\\/g, '\\\\')
                 .replace(/'/g, '\\x27')
@@ -88,7 +86,7 @@
       document.getElementById("loading").style.display = "block";
       document.getElementById("outputCode").textContent = "";
 
-      // Simulasi delay 2 detik
+      // Simulasi delay 2 detik agar proses encoding tidak langsung
       setTimeout(() => {
         // Cari literal string (kutipan tunggal, ganda, atau backtick)
         const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
@@ -104,26 +102,25 @@
         });
 
         // Hasilkan nama acak untuk variabel–fungsi
-        const globalName   = generateRandomName(); // misal: _0x327430
-        const helperName   = generateRandomName(); // misal: _0x3466
-        const functionName = generateRandomName(); // misal: _0x2440
-        const arrayName    = generateRandomName(); // misal: _0x53a352
+        const globalName   = generateRandomName();   // misal: _0x327430
+        const helperName   = generateRandomName();   // misal: _0x3466
+        const functionName = generateRandomName();   // misal: _0x2440
+        const arrayName    = generateRandomName();   // misal: _0x53a352
 
         // Lakukan penggantian literal string dalam kode input
         let modifiedCode = input;
         for (const original in mapping) {
           const idx = mapping[original];
-          // Escape literal agar aman untuk regex
           const safeOriginal = original.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
           const pattern = new RegExp(safeOriginal, 'g');
           modifiedCode = modifiedCode.replace(pattern, arrayName + '[' + idx + ']');
         }
 
-        // Buat deklarasi array literal string dengan customEscape (output tanpa spasi ekstra)
+        // Buat deklarasi array literal string dengan customEscape
         const arrayElements = uniqueStrings.map(s => "'" + customEscape(s) + "'").join(',');
         const arrayDeclaration = 'const ' + arrayName + '=[' + arrayElements + '];';
 
-        // Buat preamble dan bungkus kode, tanpa komentar tambahan
+        // Buat preamble dan bungkus kode tanpa komentar tambahan
         // Format: const <globalName>=<helperName>;function <functionName>(){<arrayDeclaration><modifiedCode>}<functionName>();
         const preamble = 'const ' + globalName + '=' + helperName + ';' +
                          'function ' + functionName + '(){' +
@@ -137,7 +134,20 @@
       }, 2000);
     }
 
+    // Event listener untuk tombol Encode
     document.getElementById("encodeButton").addEventListener("click", obfuscateCode);
+
+    // Event listener untuk tombol Copy ke Clipboard
+    document.getElementById("copyButton").addEventListener("click", function() {
+      const outputText = document.getElementById("outputCode").textContent;
+      if (!outputText) {
+        alert("Tidak ada output untuk disalin!");
+        return;
+      }
+      navigator.clipboard.writeText(outputText)
+        .then(() => alert("Output berhasil disalin ke clipboard!"))
+        .catch(err => alert("Gagal menyalin: " + err));
+    });
   </script>
 </body>
 </html>
