@@ -3,30 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Custom Obfuscator (String Literals Only)</title>
+  <title>Custom Obfuscator (Literal Strings Only)</title>
   <style>
-    /* Contoh CSS untuk tampilan */
     body {
-      font-family: Arial, sans-serif;
+      font-family: monospace;
       margin: 20px;
       background: #f4f4f4;
     }
     textarea, pre {
       width: 100%;
-      font-family: monospace;
-      font-size: 14px;
-      padding: 10px;
       box-sizing: border-box;
+      padding: 10px;
       margin-bottom: 10px;
+      font-size: 14px;
     }
-    textarea {
-      height: 200px;
-    }
-    pre {
-      background: #e0e0e0;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
+    textarea { height: 200px; }
+    pre { background: #e0e0e0; white-space: pre-wrap; }
     button {
       padding: 10px 15px;
       font-size: 14px;
@@ -36,69 +28,89 @@
 </head>
 <body>
   <h1>Custom Obfuscator (Obfuscate Literal Strings Saja)</h1>
-  <textarea id="inputCode" placeholder="Masukkan kode JavaScript/HTML di sini..."></textarea>
+  <textarea id="inputCode" placeholder="Masukkan kode JavaScript di sini..."></textarea>
   <br>
   <button onclick="obfuscateCode()">Obfuscate</button>
   <h2>Output Code:</h2>
   <pre id="outputCode"></pre>
 
   <script>
+    // Fungsi untuk menghasilkan nama acak dengan format _0xXXXXXX
+    function generateRandomName() {
+      let hex = Math.floor(Math.random() * 0x1000000).toString(16);
+      hex = ('000000' + hex).slice(-6);
+      return "_0x" + hex;
+    }
+
     function obfuscateCode() {
       let input = document.getElementById("inputCode").value;
       if (!input.trim()) {
         alert("Masukkan kode terlebih dahulu!");
         return;
       }
-      
-      // --- Langkah 1: Pisahkan blok CSS agar tidak diubah ---
-      // Cari blok <style>...</style> (non-greedy)
-      const styleRegex = /<style[\s\S]*?<\/style>/gi;
-      let styleBlocks = [];
-      input = input.replace(styleRegex, function(match) {
-        // Simpan blok CSS ke array dan gantikan dengan placeholder
-        const placeholder = `%%%STYLE_BLOCK_${styleBlocks.length}%%%`;
-        styleBlocks.push(match);
-        return placeholder;
-      });
-      
-      // --- Langkah 2: Obfuscate literal string di bagian non-CSS ---
-      // Regex untuk mencocokkan literal string (tanda kutip tunggal, ganda, atau backtick)
+
+      // Hasil akhir akan dibangun melalui tiga bagian:
+      // 1. Deklarasi "dummy" dan fungsi pembantu dengan nama acak.
+      // 2. Deklarasi array literal string (yang berisi string–string unik dari input).
+      // 3. Kode input yang sudah diganti literal string-nya dengan referensi ke array.
+
+      // Pertama, kumpulkan semua literal string pada kode.
+      // Regex ini menangkap literal dengan tanda kutip tunggal, ganda, atau backtick.
       const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
       const matches = input.match(stringRegex) || [];
-      
-      // Kumpulkan literal string unik (tanpa tanda kutip)
-      let uniqueStrings = [];
-      let stringMap = {};
+
+      // Kumpulkan literal string unik (beserta mapping index-nya)
+      const uniqueStrings = [];
+      const stringMapping = {};
       matches.forEach(str => {
-        if (!(str in stringMap)) {
-          // Simpan nilai string tanpa pembatas
-          stringMap[str] = uniqueStrings.length;
-          uniqueStrings.push(str.slice(1, -1));
-        }
+        if (stringMapping.hasOwnProperty(str)) return;
+        // Simpan nilai string tanpa pembatas (tanda kutip)
+        stringMapping[str] = uniqueStrings.length;
+        uniqueStrings.push(str.slice(1, -1));
       });
-      
-      // Buat deklarasi array string obfuscation dengan nama _0x3df1
-      const arrayCode = 'const _0x3df1 = [' +
-        uniqueStrings.map(s => JSON.stringify(s)).join(', ') +
-        '];\n';
-      
-      // Ganti seluruh literal string pada kode (selain blok CSS yang sudah diplaceholder)
-      let obfuscatedCode = input;
-      for (const original in stringMap) {
-        // Escape karakter khusus agar aman dalam regex
+
+      // Hasilkan nama acak untuk:
+      // - dummyName (misalnya _0x327430)
+      // - helperName (misalnya _0x3466)
+      // - arrayName (misalnya _0x53a352)
+      const dummyName = generateRandomName();
+      const helperName = generateRandomName();
+      const arrayName = generateRandomName();
+
+      // Lakukan penggantian literal string dalam kode input
+      // Gantilah setiap kemunculan literal (berupa keseluruhan kecocokan regex)
+      // dengan referensi ke array: misalnya, _0x53a352[<index>]
+      let modifiedCode = input;
+      // Karena literal string mungkin muncul lebih dari sekali,
+      // kita lakukan penggantian untuk tiap literal unik.
+      for (const original in stringMapping) {
+        const index = stringMapping[original];
+        // Escape karakter khusus dalam regex agar aman
         const safeOriginal = original.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         const pattern = new RegExp(safeOriginal, 'g');
-        obfuscatedCode = obfuscatedCode.replace(pattern, `_0x3df1[${stringMap[original]}]`);
+        modifiedCode = modifiedCode.replace(pattern, arrayName + '[' + index + ']');
       }
-      
-      // --- Langkah 3: Kembalikan blok CSS ke tempatnya ---
-      styleBlocks.forEach((block, index) => {
-        const placeholder = `%%%STYLE_BLOCK_${index}%%%`;
-        obfuscatedCode = obfuscatedCode.replace(placeholder, block);
-      });
-      
-      // Gabungkan deklarasi array dengan kode yang telah diobfuscate
-      const finalCode = arrayCode + obfuscatedCode;
+
+      // Buat deklarasi array string (dengan setiap elemen di-JSON.stringify agar escape karakter terjaga)
+      const arrayDeclaration = 'const ' + arrayName + ' = [' +
+        uniqueStrings.map(s => JSON.stringify(s)).join(', ') +
+        '];\n';
+
+      // Buat deklarasi dummy dan fungsi pembantu.
+      // Contoh format: 
+      //   const _0x327430 = _0x3466;
+      //   function _0x3466(){ 'use strict'; return; }
+      const preamble =
+        'const ' + dummyName + ' = ' + helperName + ';\n' +
+        'function ' + helperName + '(){\n' +
+        '    ' + arrayDeclaration +
+        '    // Fungsi pembantu – bisa dikembangkan jika dibutuhkan\n' +
+        '    return;\n' +
+        '}\n';
+
+      // Gabungkan preamble dan kode yang telah dimodifikasi.
+      const finalCode = preamble + modifiedCode;
+
       document.getElementById("outputCode").textContent = finalCode;
     }
   </script>
