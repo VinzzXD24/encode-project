@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Encoder/Decoder</title>
+    <title>HTML Encoder/Decoder</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,7 +18,7 @@
         }
         textarea {
             width: 100%;
-            height: 100px;
+            height: 150px;
             margin: 10px 0;
         }
         button {
@@ -36,16 +36,16 @@
 </head>
 <body>
     <div class="container">
-        <h2>Advanced Array Encoder/Decoder</h2>
-        <textarea id="input" placeholder="Masukkan teks di sini..."></textarea><br>
-        <button onclick="encode()">Encode</button>
-        <button onclick="decode()">Decode</button>
+        <h2>HTML Encoder/Decoder</h2>
+        <textarea id="input" placeholder="Masukkan HTML di sini..."></textarea><br>
+        <button onclick="encodeHTML()">Encode</button>
+        <button onclick="decodeHTML()">Decode</button>
         <h3>Hasil:</h3>
-        <div id="output"></div>
+        <pre id="output"></pre>
     </div>
 
     <script>
-        // Array substitusi untuk encoding
+        // Mapping substitusi untuk encoding
         const encodeMap = {
             'a': '7G', 'b': 'K2', 'c': 'D9', 'd': 'X4', 'e': 'M1', 'f': 'P8', 'g': 'Z5', 'h': 'Q3', 
             'i': 'A6', 'j': 'E0', 'k': 'T7', 'l': 'F2', 'm': 'W9', 'n': 'H4', 'o': 'B1', 'p': 'L8',
@@ -53,45 +53,62 @@
             'y': 'S1', 'z': 'I8', ' ': '_', '.': 'XX', ',': 'YY'
         };
 
-        // Buat map kebalikan untuk decoding
-        const decodeMap = {};
-        for (const key in encodeMap) {
-            decodeMap[encodeMap[key]] = key;
-        }
+        const decodeMap = Object.fromEntries(Object.entries(encodeMap).map(([k, v]) => [v, k]));
 
-        function encode() {
-            const input = document.getElementById('input').value;
-            let encoded = '';
+        // Elemen yang tidak boleh dienkripsi
+        const excludeTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'title', 'strong', 'b', 'i', 'u'];
 
-            for (let i = 0; i < input.length; i++) {
-                const char = input[i].toLowerCase(); // Biar case-insensitive
-                if (encodeMap[char]) {
-                    encoded += encodeMap[char]; // Encode dengan substitusi
-                } else {
-                    encoded += char; // Karakter yang tidak ada di encodeMap tetap sama
+        function encodeHTML() {
+            const inputHTML = document.getElementById('input').value;
+
+            // Enkripsi hanya teks dalam tag yang diizinkan
+            const encodedHTML = inputHTML.replace(/<(\w+)[^>]*>([^<>]+)<\/\1>/g, (match, tag, content) => {
+                if (excludeTags.includes(tag.toLowerCase())) {
+                    return match; // Jangan enkripsi elemen penting
                 }
-            }
-            
-            document.getElementById('output').innerText = encoded;
+                return `<${tag}>` + encodeText(content) + `</${tag}>`;
+            });
+
+            document.getElementById('output').innerText = encodedHTML;
         }
 
-        function decode() {
-            const input = document.getElementById('input').value;
-            let decoded = '';
+        function decodeHTML() {
+            const inputHTML = document.getElementById('input').value;
 
+            // Dekripsi hanya teks yang telah dienkripsi sebelumnya
+            const decodedHTML = inputHTML.replace(/<(\w+)[^>]*>([^<>]+)<\/\1>/g, (match, tag, content) => {
+                if (excludeTags.includes(tag.toLowerCase())) {
+                    return match; // Jangan ubah elemen penting
+                }
+                return `<${tag}>` + decodeText(content) + `</${tag}>`;
+            });
+
+            document.getElementById('output').innerText = decodedHTML;
+        }
+
+        function encodeText(text) {
+            let encoded = '';
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i].toLowerCase();
+                encoded += encodeMap[char] || char; // Encode hanya yang ada di map
+            }
+            return encoded;
+        }
+
+        function decodeText(text) {
+            let decoded = '';
             let i = 0;
-            while (i < input.length) {
-                const chunk = input.substr(i, 2); // Ambil 2 karakter per iterasi
+            while (i < text.length) {
+                const chunk = text.substr(i, 2);
                 if (decodeMap[chunk]) {
                     decoded += decodeMap[chunk];
                     i += 2;
                 } else {
-                    decoded += input[i]; // Jika tidak ada di map, biarkan tetap sama
+                    decoded += text[i];
                     i++;
                 }
             }
-
-            document.getElementById('output').innerText = decoded;
+            return decoded;
         }
     </script>
 </body>
