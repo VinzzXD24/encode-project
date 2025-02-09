@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multi Decoding Tool - Dark Theme</title>
+  <!-- Menggunakan Google Fonts untuk tampilan modern -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
+  <style>
+    /* Tema Gelap */
+    body {
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #141E30, #243B55);
+      font-family: 'Roboto', sans-serif;
+      color: #f1f1f1;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #2e2e2e;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    select, textarea {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      border: 2px solid #555;
+      border-radius: 5px;
+      background: #444;
+      color: #fff;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    .buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #5563DE;
+      color: #fff;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #374ABE;
+    }
+    #outputText {
+      min-height: 120px;
+      padding: 15px;
+      background: #3a3a3a;
+      color: #fff;
+      border: 2px solid #555;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: monospace;
+      font-size: 15px;
+    }
+    /* Spinner Loading */
+    #loading {
+      display: none;
+      margin: 20px auto;
+      border: 8px solid #555;
+      border-top: 8px solid #5563DE;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Multi Decoding Tool</h1>
+    <!-- Dropdown untuk memilih metode decoding -->
+    <select id="decodeMethod">
+      <option value="base64">Base64</option>
+      <option value="charcodes">CharCodes</option>
+      <option value="url">URL</option>
+      <option value="morse">Morse</option>
+      <option value="binary">Binary</option>
+      <option value="rot13">Rot13</option>
+      <option value="hex">Hex</option>
+      <option value="atbash">Atbash</option>
+      <option value="base85">Base85</option>
+      <option value="base91">Base91</option>
+      <option value="jsobfuscate">JSObfuscate</option>
+      <option value="punycode">Punycode</option>
+      <option value="brainfuck">Brainfuck</option>
+      <option value="base4096">Base4096</option>
+      <option value="dna">DNA</option>
+    </select>
+    <textarea id="inputText" rows="5" placeholder="Masukkan teks terenkripsi..."></textarea>
+    <div class="buttons">
+      <button id="pasteButton">Paste</button>
+      <button id="decodeButton">Decode</button>
+      <button id="copyButton">Copy</button>
+    </div>
+    <div id="loading"></div>
+    <pre id="outputText"></pre>
+  </div>
+  
+  <script>
+    // ===========================================================
+    // Bagian 1: Fungsi-Fungsi Decoding
+    // ===========================================================
+    
+    function decodeBase64(str) {
+      try {
+        return atob(str);
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    function decodeCharCodes(str) {
+      try {
+        return str.split(" ").map(function(num) {
+          return String.fromCharCode(parseInt(num, 10));
+        }).join("");
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    function decodeURL(str) {
+      try {
+        return decodeURIComponent(str);
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // Untuk Morse, buat mapping kebalikan
+    var morseMap = {
+      'A': ".-", 'B': "-...", 'C': "-.-.", 'D': "-..",
+      'E': ".", 'F': "..-.", 'G': "--.", 'H': "....",
+      'I': "..", 'J': ".---", 'K': "-.-", 'L': ".-..",
+      'M': "--", 'N': "-.", 'O': "---", 'P': ".--.",
+      'Q': "--.-", 'R': ".-.", 'S': "...", 'T': "-",
+      'U': "..-", 'V': "...-", 'W': ".--", 'X': "-..-",
+      'Y': "-.--", 'Z': "--..",
+      '0': "-----", '1': ".----", '2': "..---", '3': "...--",
+      '4': "....-", '5': ".....", '6': "-....", '7': "--...",
+      '8': "---..", '9': "----."
+    };
+    var reverseMorse = {};
+    Object.keys(morseMap).forEach(function(key) {
+      reverseMorse[morseMap[key]] = key;
+    });
+    function decodeMorse(str) {
+      try {
+        return str.split(" ").map(function(code) {
+          return code === "/" ? " " : (reverseMorse[code] || code);
+        }).join("");
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    function decodeBinary(str) {
+      try {
+        return str.split(" ").map(function(bin) {
+          return String.fromCharCode(parseInt(bin, 2));
+        }).join("");
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // Rot13 bersifat simetris
+    function decodeRot13(str) {
+      try {
+        return str.replace(/[a-zA-Z]/g, function(c) {
+          var code = c.charCodeAt(0) + 13;
+          if (c >= 'A' && c <= 'Z') {
+            return String.fromCharCode(code <= 90 ? code : code - 26);
+          } else if (c >= 'a' && c <= 'z') {
+            return String.fromCharCode(code <= 122 ? code : code - 26);
+          }
+          return c;
+        });
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    function decodeHex(str) {
+      try {
+        return str.split(" ").map(function(h) {
+          return String.fromCharCode(parseInt(h, 16));
+        }).join("");
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // Atbash juga simetris
+    function decodeAtbash(str) {
+      try {
+        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var reversed = alphabet.split("").reverse().join("");
+        return str.split("").map(function(ch) {
+          var upper = ch.toUpperCase();
+          var idx = alphabet.indexOf(upper);
+          if (idx !== -1) {
+            var newChar = reversed[idx];
+            return (ch === ch.toUpperCase()) ? newChar : newChar.toLowerCase();
+          }
+          return ch;
+        }).join("");
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // Base85 decoding
+    function decodeBase85(str) {
+      try {
+        var bytes = [];
+        var i = 0;
+        while (i < str.length) {
+          if (str[i] === "z") {
+            bytes.push(0, 0, 0, 0);
+            i++;
+          } else {
+            var block = str.substr(i, 5);
+            if (block.length < 5) {
+              // Jika blok kurang dari 5 karakter, pad dengan karakter 'u' (nilai 117)
+              block = block.padEnd(5, "u");
+            }
+            var num = 0;
+            for (var j = 0; j < 5; j++) {
+              num = num * 85 + (block.charCodeAt(j) - 33);
+            }
+            bytes.push((num >> 24) & 0xFF,
+                       (num >> 16) & 0xFF,
+                       (num >> 8) & 0xFF,
+                       num & 0xFF);
+            i += 5;
+          }
+        }
+        var result = "";
+        for (var k = 0; k < bytes.length; k++) {
+          result += String.fromCharCode(bytes[k]);
+        }
+        return result;
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // Base91 decoding (mengikuti algoritma basE91 klasik)
+    function decodeBase91(data) {
+      try {
+        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~\"";
+        var v = -1, b = 0, n = 0;
+        var out = "";
+        for (var i = 0; i < data.length; i++) {
+          var d = alphabet.indexOf(data[i]);
+          if (d === -1) continue;
+          if (v < 0) {
+            v = d;
+          } else {
+            v += d * 91;
+            b |= v << n;
+            n += ((v & 8191) > 88) ? 13 : 14;
+            while (n >= 8) {
+              out += String.fromCharCode(b & 255);
+              b >>= 8;
+              n -= 8;
+            }
+            v = -1;
+          }
+        }
+        if (v >= 0) {
+          b |= v << n;
+          n += 7;
+          while (n >= 8) {
+            out += String.fromCharCode(b & 255);
+            b >>= 8;
+            n -= 8;
+          }
+        }
+        return out;
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // JSObfuscate decoding: lakukan atob lalu balik string kembali
+    function decodeJSObfuscate(str) {
+      try {
+        return atob(str).split("").reverse().join("");
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // Punycode decoding: hapus prefix "xn--" dan decode hex
+    function decodePunycode(str) {
+      try {
+        if (str.startsWith("xn--")) {
+          return decodeHex(str.slice(4));
+        }
+        return str;
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // Brainfuck decoding: hitung jumlah karakter '+' sebelum setiap titik
+    function decodeBrainfuck(str) {
+      try {
+        var parts = str.split(".");
+        var result = "";
+        parts.forEach(function(part) {
+          if (part.length > 0) {
+            result += String.fromCharCode(part.length);
+          }
+        });
+        return result;
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // Base4096 decoding: setiap karakter dikodekan dari 12-bit
+    function decodeBase4096(str) {
+      try {
+        var bits = "";
+        for (var i = 0; i < str.length; i++) {
+          var num = str.charCodeAt(i) - 0x1000;
+          bits += num.toString(2).padStart(12, "0");
+        }
+        var result = "";
+        for (var i = 0; i + 8 <= bits.length; i += 8) {
+          var byte = bits.substr(i, 8);
+          result += String.fromCharCode(parseInt(byte, 2));
+        }
+        return result;
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // DNA decoding: setiap 4 huruf mewakili 8-bit
+    function decodeDNA(str) {
+      try {
+        var mapping = {"A": "00", "C": "01", "G": "10", "T": "11"};
+        var result = "";
+        for (var i = 0; i < str.length; i += 4) {
+          var chunk = str.substr(i, 4);
+          if (chunk.length < 4) break;
+          var bin = "";
+          for (var j = 0; j < 4; j++) {
+            bin += mapping[chunk[j]];
+          }
+          result += String.fromCharCode(parseInt(bin, 2));
+        }
+        return result;
+      } catch (e) {
+        return "Error: " + e.message;
+      }
+    }
+    
+    // ===========================================================
+    // Bagian 2: Mapping Metode Decoding
+    // ===========================================================
+    var decodeFunctions = {
+      "base64": decodeBase64,
+      "charcodes": decodeCharCodes,
+      "url": decodeURL,
+      "morse": decodeMorse,
+      "binary": decodeBinary,
+      "rot13": decodeRot13,
+      "hex": decodeHex,
+      "atbash": decodeAtbash,
+      "base85": decodeBase85,
+      "base91": decodeBase91,
+      "jsobfuscate": decodeJSObfuscate,
+      "punycode": decodePunycode,
+      "brainfuck": decodeBrainfuck,
+      "base4096": decodeBase4096,
+      "dna": decodeDNA
+    };
+    
+    // ===========================================================
+    // Bagian 3: Event Listener dan Clipboard
+    // ===========================================================
+    document.getElementById("decodeButton").addEventListener("click", async function() {
+      try {
+        var inp = document.getElementById("inputText").value;
+        var method = document.getElementById("decodeMethod").value;
+        var outputArea = document.getElementById("outputText");
+        var loadingElem = document.getElementById("loading");
+        // Tampilkan spinner loading
+        loadingElem.style.display = "block";
+        outputArea.textContent = "";
+        // Simulasi delay 2 detik untuk efek loading
+        var res = await new Promise((resolve) => {
+          setTimeout(() => {
+            // Panggil fungsi decoding yang sesuai
+            if (decodeFunctions[method]) {
+              resolve(decodeFunctions[method](inp));
+            } else {
+              resolve("Metode decoding tidak ditemukan.");
+            }
+          }, 2000);
+        });
+        outputArea.textContent = res;
+        loadingElem.style.display = "none";
+      } catch (e) {
+        document.getElementById("outputText").textContent = "Err processing: " + e.message;
+        console.error(e);
+        document.getElementById("loading").style.display = "none";
+      }
+    });
+    
+    document.getElementById("pasteButton").addEventListener("click", async function() {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          var txt = await navigator.clipboard.readText();
+          document.getElementById("inputText").value = txt;
+        } else {
+          alert("Clipboard API not supported.");
+        }
+      } catch (e) {
+        alert("Paste error: " + e.message);
+      }
+    });
+    
+    document.getElementById("copyButton").addEventListener("click", function() {
+      try {
+        var outText = document.getElementById("outputText").textContent;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(outText).then(function() {
+            alert("Output copied to clipboard!");
+          }, function(err) {
+            alert("Failed to copy: " + err);
+          });
+        } else {
+          alert("Clipboard API not supported.");
+        }
+      } catch (e) {
+        alert("Copy error: " + e.message);
+      }
+    });
+  </script>
+</body>
+</html>
