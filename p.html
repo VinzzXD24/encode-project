@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Custom Obfuscator (Literal Strings Only)</title>
+  <title>Custom Obfuscator</title>
   <style>
     body {
       font-family: monospace;
@@ -24,13 +24,33 @@
       font-size: 14px;
       cursor: pointer;
     }
+    #loading {
+      display: none;
+      text-align: center;
+    }
+    .spinner {
+      margin: 0 auto;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0,0,0,0.1);
+      border-top-color: #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
-  <h1>Custom Obfuscator (Obfuscate Literal Strings Saja)</h1>
+  <h1>Custom Obfuscator</h1>
   <textarea id="inputCode" placeholder="Masukkan kode JavaScript di sini..."></textarea>
   <br>
-  <button onclick="obfuscateCode()">Obfuscate</button>
+  <button id="encodeButton">Encode</button>
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
   <h2>Output Code:</h2>
   <pre id="outputCode"></pre>
 
@@ -43,76 +63,62 @@
     }
 
     function obfuscateCode() {
-      let input = document.getElementById("inputCode").value;
+      const input = document.getElementById("inputCode").value;
       if (!input.trim()) {
         alert("Masukkan kode terlebih dahulu!");
         return;
       }
 
-      // Hasil akhir akan dibangun melalui tiga bagian:
-      // 1. Deklarasi "dummy" dan fungsi pembantu dengan nama acak.
-      // 2. Deklarasi array literal string (yang berisi string–string unik dari input).
-      // 3. Kode input yang sudah diganti literal string-nya dengan referensi ke array.
+      // Tampilkan animasi loading
+      document.getElementById("loading").style.display = "block";
+      document.getElementById("outputCode").textContent = "";
 
-      // Pertama, kumpulkan semua literal string pada kode.
-      // Regex ini menangkap literal dengan tanda kutip tunggal, ganda, atau backtick.
-      const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
-      const matches = input.match(stringRegex) || [];
+      // Simulasi delay proses (misalnya 2 detik)
+      setTimeout(() => {
+        // Ambil literal string menggunakan regex (tanda kutip tunggal, ganda, atau backtick)
+        const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
+        const matches = input.match(stringRegex) || [];
 
-      // Kumpulkan literal string unik (beserta mapping index-nya)
-      const uniqueStrings = [];
-      const stringMapping = {};
-      matches.forEach(str => {
-        if (stringMapping.hasOwnProperty(str)) return;
-        // Simpan nilai string tanpa pembatas (tanda kutip)
-        stringMapping[str] = uniqueStrings.length;
-        uniqueStrings.push(str.slice(1, -1));
-      });
+        const uniqueStrings = [];
+        const mapping = {};
+        matches.forEach(str => {
+          if (mapping.hasOwnProperty(str)) return;
+          mapping[str] = uniqueStrings.length;
+          uniqueStrings.push(str.slice(1, -1));
+        });
 
-      // Hasilkan nama acak untuk:
-      // - dummyName (misalnya _0x327430)
-      // - helperName (misalnya _0x3466)
-      // - arrayName (misalnya _0x53a352)
-      const dummyName = generateRandomName();
-      const helperName = generateRandomName();
-      const arrayName = generateRandomName();
+        // Hasilkan nama acak untuk variabel
+        const dummyName = generateRandomName();
+        const helperName = generateRandomName();
+        const arrayName = generateRandomName();
 
-      // Lakukan penggantian literal string dalam kode input
-      // Gantilah setiap kemunculan literal (berupa keseluruhan kecocokan regex)
-      // dengan referensi ke array: misalnya, _0x53a352[<index>]
-      let modifiedCode = input;
-      // Karena literal string mungkin muncul lebih dari sekali,
-      // kita lakukan penggantian untuk tiap literal unik.
-      for (const original in stringMapping) {
-        const index = stringMapping[original];
-        // Escape karakter khusus dalam regex agar aman
-        const safeOriginal = original.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const pattern = new RegExp(safeOriginal, 'g');
-        modifiedCode = modifiedCode.replace(pattern, arrayName + '[' + index + ']');
-      }
+        // Ganti seluruh literal string pada kode input dengan referensi ke array
+        let modifiedCode = input;
+        for (const original in mapping) {
+          const idx = mapping[original];
+          const safeOriginal = original.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+          const pattern = new RegExp(safeOriginal, 'g');
+          modifiedCode = modifiedCode.replace(pattern, arrayName + '[' + idx + ']');
+        }
 
-      // Buat deklarasi array string (dengan setiap elemen di-JSON.stringify agar escape karakter terjaga)
-      const arrayDeclaration = 'const ' + arrayName + ' = [' +
-        uniqueStrings.map(s => JSON.stringify(s)).join(', ') +
-        '];\n';
+        // Deklarasi array literal string tanpa komentar
+        const arrayDeclaration = 'const ' + arrayName + ' = [' +
+          uniqueStrings.map(s => JSON.stringify(s)).join(',') +
+          '];\n';
 
-      // Buat deklarasi dummy dan fungsi pembantu.
-      // Contoh format: 
-      //   const _0x327430 = _0x3466;
-      //   function _0x3466(){ 'use strict'; return; }
-      const preamble =
-        'const ' + dummyName + ' = ' + helperName + ';\n' +
-        'function ' + helperName + '(){\n' +
-        '    ' + arrayDeclaration +
-        '    // Fungsi pembantu – bisa dikembangkan jika dibutuhkan\n' +
-        '    return;\n' +
-        '}\n';
+        // Preamble: deklarasi dummy dan fungsi helper (tanpa komentar tambahan)
+        const preamble = 'const ' + dummyName + ' = ' + helperName + ';\n' +
+          'function ' + helperName + '(){' + arrayDeclaration + 'return;}\n';
 
-      // Gabungkan preamble dan kode yang telah dimodifikasi.
-      const finalCode = preamble + modifiedCode;
+        const finalCode = preamble + modifiedCode;
 
-      document.getElementById("outputCode").textContent = finalCode;
+        document.getElementById("outputCode").textContent = finalCode;
+        // Sembunyikan animasi loading
+        document.getElementById("loading").style.display = "none";
+      }, 2000);
     }
+
+    document.getElementById("encodeButton").addEventListener("click", obfuscateCode);
   </script>
 </body>
 </html>
