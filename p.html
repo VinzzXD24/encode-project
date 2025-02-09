@@ -56,17 +56,25 @@
   <pre id="outputCode"></pre>
 
   <script>
-    // Fungsi untuk menghasilkan nama acak dengan format _0xXXXXXX
+    // Menghasilkan nama acak dengan format _0xXXXXXX
     function generateRandomName() {
       let hex = Math.floor(Math.random() * 0x1000000).toString(16);
       hex = ('000000' + hex).slice(-6);
       return "_0x" + hex;
     }
 
-    // Fungsi untuk mengubah string menjadi format obfuscated (misalnya, mengganti spasi dengan \x20)
-    function escapeString(s) {
-      // Ganti backslash dan single quote agar aman, lalu ganti spasi
-      return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/ /g, '\\x20');
+    // Fungsi untuk meng-escape literal string sesuai format:
+    // - Spasi → \x20
+    // - Newline → \x0a
+    // - Double quote → \x22
+    // - Single quote → \x27
+    // - Backslash → \\
+    function customEscape(str) {
+      return str.replace(/\\/g, '\\\\')
+                .replace(/'/g, '\\x27')
+                .replace(/"/g, '\\x22')
+                .replace(/ /g, '\\x20')
+                .replace(/\n/g, '\\x0a');
     }
 
     function obfuscateCode() {
@@ -80,56 +88,51 @@
       document.getElementById("loading").style.display = "block";
       document.getElementById("outputCode").textContent = "";
 
-      // Simulasikan delay 2 detik agar proses encoding tidak langsung
+      // Simulasi delay 2 detik
       setTimeout(() => {
         // Cari literal string (kutipan tunggal, ganda, atau backtick)
         const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
         const matches = input.match(stringRegex) || [];
 
-        // Kumpulkan literal string unik beserta mapping indeksnya
+        // Kumpulkan literal string unik dan buat mapping indeks
         const uniqueStrings = [];
         const mapping = {};
         matches.forEach(str => {
           if (mapping.hasOwnProperty(str)) return;
           mapping[str] = uniqueStrings.length;
-          // Simpan nilai string tanpa pembatas tanda kutip
           uniqueStrings.push(str.slice(1, -1));
         });
 
-        // Hasilkan nama-nama acak sesuai format
+        // Hasilkan nama acak untuk variabel–fungsi
         const globalName   = generateRandomName(); // misal: _0x327430
         const helperName   = generateRandomName(); // misal: _0x3466
         const functionName = generateRandomName(); // misal: _0x2440
         const arrayName    = generateRandomName(); // misal: _0x53a352
 
-        // Lakukan penggantian literal string pada kode input
+        // Lakukan penggantian literal string dalam kode input
         let modifiedCode = input;
         for (const original in mapping) {
           const idx = mapping[original];
+          // Escape literal agar aman untuk regex
           const safeOriginal = original.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
           const pattern = new RegExp(safeOriginal, 'g');
           modifiedCode = modifiedCode.replace(pattern, arrayName + '[' + idx + ']');
         }
 
-        // Buat deklarasi array literal string dengan format yang menyerupai contoh (tanpa komentar)
-        const arrayDeclaration = 'const ' + arrayName + ' = [' +
-          uniqueStrings.map(s => "'" + escapeString(s) + "'").join(',') +
-          '];\n';
+        // Buat deklarasi array literal string dengan customEscape (output tanpa spasi ekstra)
+        const arrayElements = uniqueStrings.map(s => "'" + customEscape(s) + "'").join(',');
+        const arrayDeclaration = 'const ' + arrayName + '=[' + arrayElements + '];';
 
-        // Buat preamble (global assignment dan fungsi pembungkus)  
-        // Format:  
-        //   const <globalName> = <helperName>;
-        //   function <functionName>(){ <arrayDeclaration> <modifiedCode> }
-        //   <functionName>();
-        const preamble = 'const ' + globalName + ' = ' + helperName + ';\n' +
-                         'function ' + functionName + '(){\n' +
+        // Buat preamble dan bungkus kode, tanpa komentar tambahan
+        // Format: const <globalName>=<helperName>;function <functionName>(){<arrayDeclaration><modifiedCode>}<functionName>();
+        const preamble = 'const ' + globalName + '=' + helperName + ';' +
+                         'function ' + functionName + '(){' +
                          arrayDeclaration +
-                         modifiedCode + '\n' +
-                         '}\n' +
+                         modifiedCode +
+                         '}' +
                          functionName + '();';
 
         document.getElementById("outputCode").textContent = preamble;
-        // Sembunyikan animasi loading
         document.getElementById("loading").style.display = "none";
       }, 2000);
     }
