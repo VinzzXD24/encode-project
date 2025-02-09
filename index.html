@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Multi Encoding Tool</title>
   <style>
+    /* Gaya Umum */
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
@@ -23,7 +24,7 @@
       text-align: center;
       color: #333;
     }
-    textarea, pre {
+    textarea {
       width: 100%;
       padding: 10px;
       font-size: 16px;
@@ -31,6 +32,10 @@
       border: 1px solid #ccc;
       border-radius: 3px;
       box-sizing: border-box;
+      resize: vertical;
+    }
+    .buttons {
+      margin-bottom: 10px;
     }
     button {
       padding: 10px 20px;
@@ -45,8 +50,30 @@
     button:hover {
       background-color: #0056b3;
     }
-    .buttons {
-      margin-bottom: 10px;
+    /* Output */
+    #outputText {
+      min-height: 100px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background: #f9f9f9;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    /* Loading Spinner */
+    #loading {
+      display: none;
+      border: 8px solid #f3f3f3;  /* Warna abu-abu terang */
+      border-top: 8px solid #007BFF; /* Warna biru */
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -59,7 +86,9 @@
       <button id="encodeButton">Encode</button>
       <button id="copyButton">Copy</button>
     </div>
-    <pre id="outputText" style="min-height: 100px;"></pre>
+    <!-- Elemen spinner untuk loading -->
+    <div id="loading"></div>
+    <pre id="outputText"></pre>
   </div>
   
   <script>
@@ -319,7 +348,7 @@
           return quantumCode.toString(16);
         }).join('-');
       }
-    
+      
       // ===========================================================
       // Bagian 3: Penggabungan Hasil Secara Ringkas
       // ===========================================================
@@ -370,7 +399,7 @@
           var rand = ["x","y","z"][Math.floor(Math.random()*3)];
           return rev + rand;
         });
-        var delims = ["\x7C","\x2A","\x23"]; // |, *, #
+        var delims = ["\x7C","\x2A","\x23"];
         for(var i = delims.length - 1; i > 0; i--){
           var j = Math.floor(Math.random()*(i+1));
           var tmp = delims[i];
@@ -387,12 +416,20 @@
       document.getElementById("encodeButton").addEventListener("click", async function(){
         try{
           var inp = document.getElementById("inputText").value;
+          var outputArea = document.getElementById("outputText");
+          var loadingElem = document.getElementById("loading");
+          // Tampilkan animasi loading
+          loadingElem.style.display = "block";
+          outputArea.textContent = "";
           var res = await processEncodings(inp);
           var out = advancedCombineEncodings(res);
-          document.getElementById("outputText").textContent = out;
+          outputArea.textContent = out;
+          // Sembunyikan loading setelah selesai
+          loadingElem.style.display = "none";
         } catch(e){
           document.getElementById("outputText").textContent = "Err processing: " + e.message;
           console.error(e);
+          document.getElementById("loading").style.display = "none";
         }
       });
       
