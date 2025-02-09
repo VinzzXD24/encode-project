@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Custom Obfuscator</title>
+  <title>Advanced Obfuscator</title>
   <style>
     body {
       font-family: monospace;
-      margin: 20px;
       background: #f4f4f4;
+      margin: 20px;
     }
     textarea, pre {
       width: 100%;
@@ -17,7 +17,7 @@
       margin-bottom: 10px;
       font-size: 14px;
     }
-    textarea { height: 200px; }
+    textarea { height: 220px; }
     pre { background: #e0e0e0; white-space: pre-wrap; }
     button {
       padding: 10px 15px;
@@ -27,6 +27,7 @@
     #loading {
       display: none;
       text-align: center;
+      margin-bottom: 10px;
     }
     .spinner {
       margin: 0 auto;
@@ -43,8 +44,8 @@
   </style>
 </head>
 <body>
-  <h1>Custom Obfuscator</h1>
-  <textarea id="inputCode" placeholder="Masukkan kode JavaScript di sini..."></textarea>
+  <h1>Advanced Obfuscator</h1>
+  <textarea id="inputCode" placeholder="Masukkan kode JavaScript/HTML di sini..."></textarea>
   <br>
   <button id="encodeButton">Encode</button>
   <div id="loading">
@@ -62,6 +63,12 @@
       return "_0x" + hex;
     }
 
+    // Fungsi untuk mengubah string menjadi format obfuscated (misalnya, mengganti spasi dengan \x20)
+    function escapeString(s) {
+      // Ganti backslash dan single quote agar aman, lalu ganti spasi
+      return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/ /g, '\\x20');
+    }
+
     function obfuscateCode() {
       const input = document.getElementById("inputCode").value;
       if (!input.trim()) {
@@ -73,26 +80,29 @@
       document.getElementById("loading").style.display = "block";
       document.getElementById("outputCode").textContent = "";
 
-      // Simulasi delay proses (misalnya 2 detik)
+      // Simulasikan delay 2 detik agar proses encoding tidak langsung
       setTimeout(() => {
-        // Ambil literal string menggunakan regex (tanda kutip tunggal, ganda, atau backtick)
+        // Cari literal string (kutipan tunggal, ganda, atau backtick)
         const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
         const matches = input.match(stringRegex) || [];
 
+        // Kumpulkan literal string unik beserta mapping indeksnya
         const uniqueStrings = [];
         const mapping = {};
         matches.forEach(str => {
           if (mapping.hasOwnProperty(str)) return;
           mapping[str] = uniqueStrings.length;
+          // Simpan nilai string tanpa pembatas tanda kutip
           uniqueStrings.push(str.slice(1, -1));
         });
 
-        // Hasilkan nama acak untuk variabel
-        const dummyName = generateRandomName();
-        const helperName = generateRandomName();
-        const arrayName = generateRandomName();
+        // Hasilkan nama-nama acak sesuai format
+        const globalName   = generateRandomName(); // misal: _0x327430
+        const helperName   = generateRandomName(); // misal: _0x3466
+        const functionName = generateRandomName(); // misal: _0x2440
+        const arrayName    = generateRandomName(); // misal: _0x53a352
 
-        // Ganti seluruh literal string pada kode input dengan referensi ke array
+        // Lakukan penggantian literal string pada kode input
         let modifiedCode = input;
         for (const original in mapping) {
           const idx = mapping[original];
@@ -101,18 +111,24 @@
           modifiedCode = modifiedCode.replace(pattern, arrayName + '[' + idx + ']');
         }
 
-        // Deklarasi array literal string tanpa komentar
+        // Buat deklarasi array literal string dengan format yang menyerupai contoh (tanpa komentar)
         const arrayDeclaration = 'const ' + arrayName + ' = [' +
-          uniqueStrings.map(s => JSON.stringify(s)).join(',') +
+          uniqueStrings.map(s => "'" + escapeString(s) + "'").join(',') +
           '];\n';
 
-        // Preamble: deklarasi dummy dan fungsi helper (tanpa komentar tambahan)
-        const preamble = 'const ' + dummyName + ' = ' + helperName + ';\n' +
-          'function ' + helperName + '(){' + arrayDeclaration + 'return;}\n';
+        // Buat preamble (global assignment dan fungsi pembungkus)  
+        // Format:  
+        //   const <globalName> = <helperName>;
+        //   function <functionName>(){ <arrayDeclaration> <modifiedCode> }
+        //   <functionName>();
+        const preamble = 'const ' + globalName + ' = ' + helperName + ';\n' +
+                         'function ' + functionName + '(){\n' +
+                         arrayDeclaration +
+                         modifiedCode + '\n' +
+                         '}\n' +
+                         functionName + '();';
 
-        const finalCode = preamble + modifiedCode;
-
-        document.getElementById("outputCode").textContent = finalCode;
+        document.getElementById("outputCode").textContent = preamble;
         // Sembunyikan animasi loading
         document.getElementById("loading").style.display = "none";
       }, 2000);
