@@ -25,8 +25,22 @@
     }
     h1 {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       color: #fff;
+    }
+    /* Opsi diposisikan di bawah judul */
+    .options {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    select {
+      padding: 12px 20px;
+      font-size: 16px;
+      margin: 5px;
+      border-radius: 5px;
+      background: #444;
+      color: #fff;
+      border: 2px solid #555;
     }
     textarea {
       width: 100%;
@@ -42,15 +56,6 @@
     .buttons {
       text-align: center;
       margin-bottom: 20px;
-    }
-    select {
-      padding: 12px 20px;
-      font-size: 16px;
-      margin: 5px;
-      border-radius: 5px;
-      background: #444;
-      color: #fff;
-      border: 2px solid #555;
     }
     button {
       padding: 12px 25px;
@@ -98,15 +103,17 @@
 <body>
   <div class="container">
     <h1>Multi Encoding Tool</h1>
-    <textarea id="inputText" rows="5" placeholder="Masukkan teks untuk diencode..."></textarea>
-    <div class="buttons">
-      <button id="pasteButton">Paste</button>
-      <!-- Dropdown untuk memilih metode encoding -->
+    <!-- Dropdown opsi diposisikan di bawah judul -->
+    <div class="options">
       <select id="encodeMethod">
         <option value="full">Encode Full Power</option>
         <option value="netcyzen">Encoder Versi Netcyzen</option>
         <option value="loop">Versi Array Yang Di Loop Terus</option>
       </select>
+    </div>
+    <textarea id="inputText" rows="5" placeholder="Masukkan teks untuk diencode..."></textarea>
+    <div class="buttons">
+      <button id="pasteButton">Paste</button>
       <button id="encodeButton">Encode</button>
       <button id="copyButton">Copy</button>
     </div>
@@ -149,17 +156,11 @@
     // ===========================================================
     // Part 2: Basic Encoding Functions
     // ===========================================================
-    function encodeBase64(str) {
-      return btoa(str);
-    }
+    function encodeBase64(str) { return btoa(str); }
     function encodeCharCodes(str) {
-      return str.split("").map(function(ch) {
-        return ch.charCodeAt(0);
-      }).join(" ");
+      return str.split("").map(function(ch) { return ch.charCodeAt(0); }).join(" ");
     }
-    function encodeURL(str) {
-      return encodeURIComponent(str);
-    }
+    function encodeURL(str) { return encodeURIComponent(str); }
     var morseMap = {
       'A': ".-", 'B': "-...", 'C': "-.-.", 'D': "-..",
       'E': ".", 'F': "..-.", 'G': "--.", 'H': "....",
@@ -185,11 +186,8 @@
     function encodeRot13(str) {
       return str.replace(/[a-zA-Z]/g, function(c) {
         var code = c.charCodeAt(0) + 13;
-        if (c >= 'A' && c <= 'Z') {
-          return String.fromCharCode(code <= 90 ? code : code - 26);
-        } else if (c >= 'a' && c <= 'z') {
-          return String.fromCharCode(code <= 122 ? code : code - 26);
-        }
+        if (c >= 'A' && c <= 'Z') { return String.fromCharCode(code <= 90 ? code : code - 26); }
+        else if (c >= 'a' && c <= 'z') { return String.fromCharCode(code <= 122 ? code : code - 26); }
         return c;
       });
     }
@@ -213,19 +211,14 @@
     }
     function encodeBase85(str) {
       var bytes = [];
-      for (var i = 0; i < str.length; i++) {
-        bytes.push(str.charCodeAt(i));
-      }
+      for (var i = 0; i < str.length; i++) { bytes.push(str.charCodeAt(i)); }
       var padding = (4 - (bytes.length % 4)) % 4;
-      for (var i = 0; i < padding; i++) {
-        bytes.push(0);
-      }
+      for (var i = 0; i < padding; i++) { bytes.push(0); }
       var result = "";
       for (var i = 0; i < bytes.length; i += 4) {
         var num = ((bytes[i] << 24) >>> 0) | (bytes[i+1] << 16) | (bytes[i+2] << 8) | (bytes[i+3]);
-        if (num === 0) {
-          result += "z";
-        } else {
+        if (num === 0) { result += "z"; }
+        else {
           var block = "";
           var divisor = Math.pow(85, 4);
           for (var j = 0; j < 5; j++) {
@@ -412,12 +405,14 @@
       }
       return "0x" + chars.join("") + "bs";
     }
-    // Fungsi arrayMethodEncoding untuk opsi Encode Full Power (tambahan metode array)
-    // Setiap hasil dasar akan diubah ke format "0x[hasil]bs" dan digabungkan
-    function arrayMethodEncoding(results) {
-      return results.map(function(item) {
-        return "0x" + item + "bs";
-      }).join(" ");
+    // Fungsi tambahan: Format output Encode Full Power dengan label tiap metode
+    function formatFullPowerOutput(results) {
+      var methodNames = ["Base64", "CharCodes", "URL", "Morse", "Binary", "Rot13", "Hex", "Atbash", "Base85", "Base91", "JSObfuscate", "Punycode", "Brainfuck", "Base4096", "DNA"];
+      var outStr = "";
+      for (var i = 0; i < results.length; i++) {
+         outStr += "[" + methodNames[i] + "]:\n" + results[i] + "\n\n";
+      }
+      return outStr;
     }
     
     // ===========================================================
@@ -436,11 +431,11 @@
           res = await new Promise((resolve) => {
             setTimeout(() => { resolve(processEncodingsFull(inp)); }, 2000);
           });
-          // Hasil dari advanced combining
-          var out1 = advancedCombineEncodings(res);
-          // Tambahan metode array untuk Encode Full Power
-          var out2 = arrayMethodEncoding(res);
-          outputArea.textContent = "Advanced Combined: " + out1 + "\n\n" + "Array Method: " + out2;
+          // Format output dengan label untuk tiap metode
+          var outFormatted = formatFullPowerOutput(res);
+          // Juga tampilkan hasil advanced combine jika diinginkan
+          var outAdvanced = advancedCombineEncodings(res);
+          outputArea.textContent = "Formatted Output:\n" + outFormatted + "\nAdvanced Combined:\n" + outAdvanced;
         } else if (method === "netcyzen") {
           res = await new Promise((resolve) => {
             setTimeout(() => { resolve(processEncodingsNetcyzen(inp)); }, 2000);
