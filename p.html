@@ -1,145 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Multi Encoding Tool - Dark Theme</title>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
+  <title>Custom Obfuscator (String Literals Only)</title>
   <style>
     body {
-      margin: 0;
-      padding: 20px;
-      background: linear-gradient(135deg, #141E30, #243B55);
-      font-family: 'Roboto', sans-serif;
-      color: #f1f1f1;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: #2e2e2e;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-      color: #fff;
-    }
-    .options {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    select, input[type="file"] {
-      padding: 12px 20px;
-      font-size: 16px;
-      margin: 5px;
-      border-radius: 5px;
-      background: #444;
-      color: #fff;
-      border: 2px solid #555;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f4f4f4;
     }
     textarea {
       width: 100%;
-      padding: 15px;
-      font-size: 16px;
-      background: #444;
-      color: #fff;
-      border: 2px solid #555;
-      border-radius: 5px;
-      resize: vertical;
-      margin-bottom: 15px;
+      height: 200px;
+      margin-bottom: 10px;
+      font-family: monospace;
+      font-size: 14px;
+      padding: 10px;
     }
-    .buttons {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    button {
-      padding: 12px 25px;
-      font-size: 16px;
-      margin: 5px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      background: #5563DE;
-      color: #fff;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #374ABE;
-    }
-    #outputText {
-      min-height: 120px;
-      padding: 15px;
-      background: #3a3a3a;
-      color: #fff;
-      border: 2px solid #555;
-      border-radius: 5px;
+    pre {
+      background: #e0e0e0;
+      padding: 10px;
       white-space: pre-wrap;
       word-wrap: break-word;
       font-family: monospace;
-      font-size: 15px;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Multi Encoding Tool</h1>
-    <div class="options">
-      <select id="encodeMethod">
-        <option value="base64">Base64</option>
-        <option value="hex">Hex</option>
-        <option value="binary">Binary</option>
-      </select>
-      <input type="file" id="fileInput" accept=".txt">
-    </div>
-    <textarea id="inputText" rows="5" placeholder="Masukkan teks untuk diencode..."></textarea>
-    <div class="buttons">
-      <button id="encodeButton">Encode</button>
-      <button id="copyButton">Copy</button>
-    </div>
-    <pre id="outputText"></pre>
-  </div>
-  
+  <h1>Custom Obfuscator (Obfuscate String Literals)</h1>
+  <textarea id="inputCode" placeholder="Masukkan kode JavaScript di sini..."></textarea>
+  <br>
+  <button onclick="obfuscateCode()">Obfuscate</button>
+  <h2>Output Code:</h2>
+  <pre id="outputCode"></pre>
+
   <script>
-    function encodeBase64(str) {
-      return btoa(str);
-    }
-
-    function encodeHex(str) {
-      return str.split("").map(ch => ch.charCodeAt(0).toString(16).padStart(2, "0")).join(" ");
-    }
-
-    function encodeBinary(str) {
-      return str.split("").map(ch => ch.charCodeAt(0).toString(2).padStart(8, "0")).join(" ");
-    }
-
-    document.getElementById("encodeButton").addEventListener("click", function() {
-      const inputText = document.getElementById("inputText").value;
-      const encodeMethod = document.getElementById("encodeMethod").value;
-      let output = "";
-
-      switch (encodeMethod) {
-        case "base64":
-          output = encodeBase64(inputText);
-          break;
-        case "hex":
-          output = encodeHex(inputText);
-          break;
-        case "binary":
-          output = encodeBinary(inputText);
-          break;
-        default:
-          output = "Metode tidak dikenali!";
+    function obfuscateCode() {
+      const input = document.getElementById("inputCode").value;
+      if (!input.trim()) {
+        alert("Masukkan kode terlebih dahulu!");
+        return;
       }
-
-      document.getElementById("outputText").innerText = output;
-    });
-
-    document.getElementById("copyButton").addEventListener("click", function() {
-      const outputText = document.getElementById("outputText").innerText;
-      navigator.clipboard.writeText(outputText).then(() => alert("Hasil telah disalin!"));
-    });
+      
+      // Regex untuk mencocokkan literal string (kutipan tunggal, ganda, atau backtick)
+      const regex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
+      const matches = input.match(regex) || [];
+      
+      // Kumpulkan literal string unik
+      const uniqueStrings = [];
+      const stringMap = {};
+      matches.forEach(str => {
+        if (stringMap.hasOwnProperty(str)) {
+          // Sudah ada, lewati
+        } else {
+          stringMap[str] = uniqueStrings.length;
+          // Hapus pembatas (kutipan) agar nilai string murni disimpan;
+          // nanti akan dikonversi ulang dengan JSON.stringify saat deklarasi array.
+          uniqueStrings.push(str.slice(1, -1));
+        }
+      });
+      
+      // Buat deklarasi array string obfuscation dengan nama _0x3df1
+      const arrayCode = 'const _0x3df1 = [' +
+        uniqueStrings.map(s => JSON.stringify(s)).join(', ') +
+        '];\n';
+      
+      // Ganti seluruh literal string pada kode dengan referensi ke _0x3df1[index]
+      let obfuscatedCode = input;
+      for (const original in stringMap) {
+        // Escape karakter khusus agar aman dalam regex
+        const safeOriginal = original.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const pattern = new RegExp(safeOriginal, 'g');
+        obfuscatedCode = obfuscatedCode.replace(pattern, `_0x3df1[${stringMap[original]}]`);
+      }
+      
+      // Gabungkan deklarasi array dan kode yang telah diobfuscate
+      const finalCode = arrayCode + obfuscatedCode;
+      document.getElementById("outputCode").textContent = finalCode;
+    }
   </script>
 </body>
 </html>
