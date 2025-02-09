@@ -1,115 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML Encoder/Decoder</title>
+    <title>JavaScript Obfuscator - Array Mangle & String Split</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .container {
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 5px;
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            margin: 10px 0;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; background: #1e1e1e; color: #fff; }
+        textarea { width: 90%; height: 150px; margin: 10px 0; padding: 10px; background: #252526; color: #fff; border: 1px solid #444; }
+        button { padding: 10px 15px; margin: 10px; border: none; background: #007bff; color: white; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { width: 90%; min-height: 150px; background: #252526; padding: 10px; border: 1px solid #444; overflow-x: auto; text-align: left; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>HTML Encoder/Decoder</h2>
-        <textarea id="input" placeholder="Masukkan HTML di sini..."></textarea><br>
-        <button onclick="encodeHTML()">Encode</button>
-        <button onclick="decodeHTML()">Decode</button>
-        <h3>Hasil:</h3>
-        <pre id="output"></pre>
-    </div>
+
+    <h2>JavaScript Obfuscator - Array Mangle & String Split</h2>
+    <textarea id="inputCode" placeholder="Masukkan kode JavaScript di sini..."></textarea>
+    <br>
+    <button onclick="obfuscateCode()">Obfuscate</button>
+    <button onclick="copyToClipboard()">Copy</button>
+    <button onclick="downloadFile()">Download</button>
+
+    <h3>Hasil:</h3>
+    <pre id="outputCode"></pre>
 
     <script>
-        // Mapping substitusi untuk encoding
-        const encodeMap = {
-            'a': '7G', 'b': 'K2', 'c': 'D9', 'd': 'X4', 'e': 'M1', 'f': 'P8', 'g': 'Z5', 'h': 'Q3', 
-            'i': 'A6', 'j': 'E0', 'k': 'T7', 'l': 'F2', 'm': 'W9', 'n': 'H4', 'o': 'B1', 'p': 'L8',
-            'q': 'Y5', 'r': 'U3', 's': 'V6', 't': 'N0', 'u': 'J7', 'v': 'C2', 'w': 'O9', 'x': 'R4',
-            'y': 'S1', 'z': 'I8', ' ': '_', '.': 'XX', ',': 'YY'
-        };
+        function obfuscateCode() {
+            let input = document.getElementById("inputCode").value;
+            if (!input.trim()) {
+                alert("Masukkan kode dulu!");
+                return;
+            }
 
-        const decodeMap = Object.fromEntries(Object.entries(encodeMap).map(([k, v]) => [v, k]));
+            // Pisahkan string dalam kode
+            let stringMatches = input.match(/(["'`])(?:(?=(\\?))\2.)*?\1/g) || [];
+            let stringArray = stringMatches.map((s, i) => `s${i}`);
+            let stringData = stringMatches.map(s => s.replace(/"/g, '\\"'));
 
-        // Elemen yang tidak boleh dienkripsi
-        const excludeTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'title', 'strong', 'b', 'i', 'u'];
+            // Buat array string
+            let stringArrayCode = `const _strArr = ["${stringData.join('","')}"];`;
 
-        function encodeHTML() {
-            const inputHTML = document.getElementById('input').value;
-
-            // Enkripsi hanya teks dalam tag yang diizinkan
-            const encodedHTML = inputHTML.replace(/<(\w+)[^>]*>([^<>]+)<\/\1>/g, (match, tag, content) => {
-                if (excludeTags.includes(tag.toLowerCase())) {
-                    return match; // Jangan enkripsi elemen penting
-                }
-                return `<${tag}>` + encodeText(content) + `</${tag}>`;
+            // Ganti string dengan referensi array
+            stringMatches.forEach((str, index) => {
+                input = input.replace(new RegExp(str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "g"), `_strArr[${index}]`);
             });
 
-            document.getElementById('output').innerText = encodedHTML;
+            // Mangle fungsi dan variabel
+            input = input.replace(/function\s+(\w+)/g, (_, name) => `function _${name}`);
+            input = input.replace(/var\s+(\w+)/g, (_, name) => `var _${name}`);
+
+            // Gabungkan semua dalam satu fungsi
+            let finalCode = `(function() { ${stringArrayCode} ${input} })();`;
+
+            document.getElementById("outputCode").textContent = finalCode;
         }
 
-        function decodeHTML() {
-            const inputHTML = document.getElementById('input').value;
-
-            // Dekripsi hanya teks yang telah dienkripsi sebelumnya
-            const decodedHTML = inputHTML.replace(/<(\w+)[^>]*>([^<>]+)<\/\1>/g, (match, tag, content) => {
-                if (excludeTags.includes(tag.toLowerCase())) {
-                    return match; // Jangan ubah elemen penting
-                }
-                return `<${tag}>` + decodeText(content) + `</${tag}>`;
-            });
-
-            document.getElementById('output').innerText = decodedHTML;
+        function copyToClipboard() {
+            const output = document.getElementById("outputCode").textContent;
+            navigator.clipboard.writeText(output).then(() => alert("Copied to clipboard!"));
         }
 
-        function encodeText(text) {
-            let encoded = '';
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i].toLowerCase();
-                encoded += encodeMap[char] || char; // Encode hanya yang ada di map
-            }
-            return encoded;
-        }
-
-        function decodeText(text) {
-            let decoded = '';
-            let i = 0;
-            while (i < text.length) {
-                const chunk = text.substr(i, 2);
-                if (decodeMap[chunk]) {
-                    decoded += decodeMap[chunk];
-                    i += 2;
-                } else {
-                    decoded += text[i];
-                    i++;
-                }
-            }
-            return decoded;
+        function downloadFile() {
+            const output = document.getElementById("outputCode").textContent;
+            const blob = new Blob([output], { type: "text/javascript" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "obfuscated.js";
+            link.click();
         }
     </script>
+
 </body>
 </html>
