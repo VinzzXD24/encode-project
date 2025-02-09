@@ -382,11 +382,12 @@
       }
       return loopResults.join("\n");
     }
+    // Fungsi combineEncodings (mengambil 4 karakter dari setiap hasil)
     function combineEncodings(results) {
       var take = 4;
       return results.map(function(r) { return r.substr(0, take); }).join("");
     }
-    // Fungsi advancedCombineEncodings untuk opsi Full dan Netcyzen (tetap)
+    // Fungsi advancedCombineEncodings untuk opsi Full Power dan Netcyzen (pengacakan hasil)
     function advancedCombineEncodings(results) {
       var basic = combineEncodings(results);
       var chars = basic.split("");
@@ -396,7 +397,6 @@
         chars[i] = chars[j];
         chars[j] = tmp;
       }
-      // Hasilnya tidak diberi prefix/suffix khusus
       return chars.join("");
     }
     // Fungsi advancedCombineEncodingsLoop untuk opsi "Versi Array Yang Di Loop Terus"
@@ -411,6 +411,13 @@
         chars[j] = tmp;
       }
       return "0x" + chars.join("") + "bs";
+    }
+    // Fungsi arrayMethodEncoding untuk opsi Encode Full Power (tambahan metode array)
+    // Setiap hasil dasar akan diubah ke format "0x[hasil]bs" dan digabungkan
+    function arrayMethodEncoding(results) {
+      return results.map(function(item) {
+        return "0x" + item + "bs";
+      }).join(" ");
     }
     
     // ===========================================================
@@ -429,8 +436,11 @@
           res = await new Promise((resolve) => {
             setTimeout(() => { resolve(processEncodingsFull(inp)); }, 2000);
           });
-          out = advancedCombineEncodings(res);
-          outputArea.textContent = out;
+          // Hasil dari advanced combining
+          var out1 = advancedCombineEncodings(res);
+          // Tambahan metode array untuk Encode Full Power
+          var out2 = arrayMethodEncoding(res);
+          outputArea.textContent = "Advanced Combined: " + out1 + "\n\n" + "Array Method: " + out2;
         } else if (method === "netcyzen") {
           res = await new Promise((resolve) => {
             setTimeout(() => { resolve(processEncodingsNetcyzen(inp)); }, 2000);
