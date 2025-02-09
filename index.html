@@ -3,36 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Multi Encoding Tool</title>
+  <title>Multi Encoding Tool - Dark Theme</title>
   <!-- Menggunakan Google Fonts untuk tampilan modern -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
   <style>
-    /* Tampilan Umum */
+    /* Tampilan Umum (Tema Gelap) */
     body {
       margin: 0;
       padding: 20px;
-      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      /* Background gradient gelap */
+      background: linear-gradient(135deg, #141E30, #243B55);
       font-family: 'Roboto', sans-serif;
-      color: #333;
+      color: #f1f1f1;
     }
     .container {
       max-width: 900px;
       margin: auto;
-      background: #fff;
+      background: #2e2e2e;
       padding: 30px;
       border-radius: 8px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     }
     h1 {
       text-align: center;
       margin-bottom: 20px;
-      color: #222;
+      color: #fff;
     }
     textarea {
       width: 100%;
       padding: 15px;
       font-size: 16px;
-      border: 2px solid #ccc;
+      background: #444;
+      color: #fff;
+      border: 2px solid #555;
       border-radius: 5px;
       resize: vertical;
       margin-bottom: 15px;
@@ -58,9 +61,10 @@
     #outputText {
       min-height: 120px;
       padding: 15px;
-      border: 2px solid #ccc;
+      background: #3a3a3a;
+      color: #fff;
+      border: 2px solid #555;
       border-radius: 5px;
-      background: #f9f9f9;
       white-space: pre-wrap;
       word-wrap: break-word;
       font-family: monospace;
@@ -70,7 +74,7 @@
     #loading {
       display: none;
       margin: 20px auto;
-      border: 8px solid #f3f3f3;
+      border: 8px solid #555;
       border-top: 8px solid #5563DE;
       border-radius: 50%;
       width: 50px;
