@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Multi Decoding Tool - Dark Theme</title>
-  <!-- Menggunakan Google Fonts untuk tampilan modern -->
+  <title>Multi Encoding Tool - Dark Theme</title>
+  <!-- Google Fonts untuk tampilan modern -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
   <style>
     /* Tema Gelap */
@@ -28,16 +28,16 @@
       margin-bottom: 20px;
       color: #fff;
     }
-    select, textarea {
+    textarea {
       width: 100%;
       padding: 15px;
       font-size: 16px;
-      border: 2px solid #555;
-      border-radius: 5px;
       background: #444;
       color: #fff;
+      border: 2px solid #555;
+      border-radius: 5px;
+      resize: vertical;
       margin-bottom: 15px;
-      box-sizing: border-box;
     }
     .buttons {
       text-align: center;
@@ -69,7 +69,7 @@
       font-family: monospace;
       font-size: 15px;
     }
-    /* Spinner Loading */
+    /* Loading Spinner */
     #loading {
       display: none;
       margin: 20px auto;
@@ -88,29 +88,12 @@
 </head>
 <body>
   <div class="container">
-    <h1>Multi Decoding Tool</h1>
-    <!-- Dropdown untuk memilih metode decoding -->
-    <select id="decodeMethod">
-      <option value="base64">Base64</option>
-      <option value="charcodes">CharCodes</option>
-      <option value="url">URL</option>
-      <option value="morse">Morse</option>
-      <option value="binary">Binary</option>
-      <option value="rot13">Rot13</option>
-      <option value="hex">Hex</option>
-      <option value="atbash">Atbash</option>
-      <option value="base85">Base85</option>
-      <option value="base91">Base91</option>
-      <option value="jsobfuscate">JSObfuscate</option>
-      <option value="punycode">Punycode</option>
-      <option value="brainfuck">Brainfuck</option>
-      <option value="base4096">Base4096</option>
-      <option value="dna">DNA</option>
-    </select>
-    <textarea id="inputText" rows="5" placeholder="Masukkan teks terenkripsi..."></textarea>
+    <h1>Multi Encoding Tool</h1>
+    <textarea id="inputText" rows="5" placeholder="Masukkan teks untuk diencode..."></textarea>
     <div class="buttons">
       <button id="pasteButton">Paste</button>
-      <button id="decodeButton">Decode</button>
+      <button id="encodeFullButton">Encode Full</button>
+      <button id="encodeNetcyzenButton">Encode Netcyzen</button>
       <button id="copyButton">Copy</button>
     </div>
     <div id="loading"></div>
@@ -119,36 +102,54 @@
   
   <script>
     // ===========================================================
-    // Bagian 1: Fungsi-Fungsi Decoding
+    // Bagian 1: Array Label Obfuscated (Internal, tidak ditampilkan)
+    // ===========================================================
+    var _0x3df1 = [
+      "Base64",              // 0
+      "CharCodes",           // 1
+      "URL",                 // 2
+      "Morse",               // 3
+      "Binary",              // 4
+      "Rot13",               // 5
+      "Hex",                 // 6
+      "Atbash",              // 7
+      "Base85",              // 8
+      "Base91",              // 9
+      "JSObfuscate",         // 10
+      "Punycode",            // 11
+      "Brainfuck",           // 12
+      "Base4096",            // 13
+      "DNA"                  // 14
+    ];
+    (function(arr, shift) {
+      var inner = function(num) {
+        while (--num) { arr.push(arr.shift()); }
+      };
+      inner(++shift);
+    }(_0x3df1, 0x3));
+    function _0x37b7(index) {
+      index = index - 0;
+      return _0x3df1[index];
+    }
+    
+    // ===========================================================
+    // Bagian 2: Fungsi-Fungsi Encoding Dasar
     // ===========================================================
     
-    function decodeBase64(str) {
-      try {
-        return atob(str);
-      } catch (e) {
-        return "Error: " + e.message;
-      }
+    function encodeBase64(str) {
+      return btoa(str);
     }
     
-    function decodeCharCodes(str) {
-      try {
-        return str.split(" ").map(function(num) {
-          return String.fromCharCode(parseInt(num, 10));
-        }).join("");
-      } catch (e) {
-        return "Error: " + e.message;
-      }
+    function encodeCharCodes(str) {
+      return str.split("").map(function(ch) {
+        return ch.charCodeAt(0);
+      }).join(" ");
     }
     
-    function decodeURL(str) {
-      try {
-        return decodeURIComponent(str);
-      } catch (e) {
-        return "Error: " + e.message;
-      }
+    function encodeURL(str) {
+      return encodeURIComponent(str);
     }
     
-    // Untuk Morse, buat mapping kebalikan
     var morseMap = {
       'A': ".-", 'B': "-...", 'C': "-.-.", 'D': "-..",
       'E': ".", 'F': "..-.", 'G': "--.", 'H': "....",
@@ -161,276 +162,293 @@
       '4': "....-", '5': ".....", '6': "-....", '7': "--...",
       '8': "---..", '9': "----."
     };
-    var reverseMorse = {};
-    Object.keys(morseMap).forEach(function(key) {
-      reverseMorse[morseMap[key]] = key;
-    });
-    function decodeMorse(str) {
-      try {
-        return str.split(" ").map(function(code) {
-          return code === "/" ? " " : (reverseMorse[code] || code);
-        }).join("");
-      } catch (e) {
-        return "Error: " + e.message;
-      }
+    function encodeMorse(str) {
+      return str.toUpperCase().split("").map(function(ch) {
+        return (ch === " ") ? "/" : (morseMap[ch] || ch);
+      }).join(" ");
     }
     
-    function decodeBinary(str) {
-      try {
-        return str.split(" ").map(function(bin) {
-          return String.fromCharCode(parseInt(bin, 2));
-        }).join("");
-      } catch (e) {
-        return "Error: " + e.message;
-      }
+    function encodeBinary(str) {
+      return str.split("").map(function(ch) {
+        return ch.charCodeAt(0).toString(2).padStart(8, "0");
+      }).join(" ");
     }
     
-    // Rot13 bersifat simetris
-    function decodeRot13(str) {
-      try {
-        return str.replace(/[a-zA-Z]/g, function(c) {
-          var code = c.charCodeAt(0) + 13;
-          if (c >= 'A' && c <= 'Z') {
-            return String.fromCharCode(code <= 90 ? code : code - 26);
-          } else if (c >= 'a' && c <= 'z') {
-            return String.fromCharCode(code <= 122 ? code : code - 26);
+    function encodeRot13(str) {
+      return str.replace(/[a-zA-Z]/g, function(c) {
+        var code = c.charCodeAt(0) + 13;
+        if (c >= 'A' && c <= 'Z') {
+          return String.fromCharCode(code <= 90 ? code : code - 26);
+        } else if (c >= 'a' && c <= 'z') {
+          return String.fromCharCode(code <= 122 ? code : code - 26);
+        }
+        return c;
+      });
+    }
+    
+    function encodeHex(str) {
+      return str.split("").map(function(ch) {
+        return ch.charCodeAt(0).toString(16).padStart(2, "0");
+      }).join(" ");
+    }
+    
+    function encodeAtbash(str) {
+      var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      var reversed = alphabet.split("").reverse().join("");
+      return str.split("").map(function(ch) {
+        var upper = ch.toUpperCase();
+        var idx = alphabet.indexOf(upper);
+        if (idx !== -1) {
+          var newChar = reversed[idx];
+          return (ch === ch.toUpperCase()) ? newChar : newChar.toLowerCase();
+        }
+        return ch;
+      }).join("");
+    }
+    
+    function encodeBase85(str) {
+      var bytes = [];
+      for (var i = 0; i < str.length; i++) {
+        bytes.push(str.charCodeAt(i));
+      }
+      var padding = (4 - (bytes.length % 4)) % 4;
+      for (var i = 0; i < padding; i++) {
+        bytes.push(0);
+      }
+      var result = "";
+      for (var i = 0; i < bytes.length; i += 4) {
+        var num = ((bytes[i] << 24) >>> 0) | (bytes[i + 1] << 16) | (bytes[i + 2] << 8) | (bytes[i + 3]);
+        if (num === 0) {
+          result += "z";
+        } else {
+          var block = "";
+          var divisor = Math.pow(85, 4);
+          for (var j = 0; j < 5; j++) {
+            var digit = Math.floor(num / divisor) % 85;
+            block += String.fromCharCode(digit + 33);
+            divisor /= 85;
           }
-          return c;
-        });
-      } catch (e) {
-        return "Error: " + e.message;
-      }
-    }
-    
-    function decodeHex(str) {
-      try {
-        return str.split(" ").map(function(h) {
-          return String.fromCharCode(parseInt(h, 16));
-        }).join("");
-      } catch (e) {
-        return "Error: " + e.message;
-      }
-    }
-    
-    // Atbash juga simetris
-    function decodeAtbash(str) {
-      try {
-        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        var reversed = alphabet.split("").reverse().join("");
-        return str.split("").map(function(ch) {
-          var upper = ch.toUpperCase();
-          var idx = alphabet.indexOf(upper);
-          if (idx !== -1) {
-            var newChar = reversed[idx];
-            return (ch === ch.toUpperCase()) ? newChar : newChar.toLowerCase();
-          }
-          return ch;
-        }).join("");
-      } catch (e) {
-        return "Error: " + e.message;
-      }
-    }
-    
-    // Base85 decoding
-    function decodeBase85(str) {
-      try {
-        var bytes = [];
-        var i = 0;
-        while (i < str.length) {
-          if (str[i] === "z") {
-            bytes.push(0, 0, 0, 0);
-            i++;
-          } else {
-            var block = str.substr(i, 5);
-            if (block.length < 5) {
-              // Jika blok kurang dari 5 karakter, pad dengan karakter 'u' (nilai 117)
-              block = block.padEnd(5, "u");
-            }
-            var num = 0;
-            for (var j = 0; j < 5; j++) {
-              num = num * 85 + (block.charCodeAt(j) - 33);
-            }
-            bytes.push((num >> 24) & 0xFF,
-                       (num >> 16) & 0xFF,
-                       (num >> 8) & 0xFF,
-                       num & 0xFF);
-            i += 5;
-          }
+          result += block;
         }
-        var result = "";
-        for (var k = 0; k < bytes.length; k++) {
-          result += String.fromCharCode(bytes[k]);
-        }
-        return result;
-      } catch (e) {
-        return "Error: " + e.message;
       }
+      return result;
     }
     
-    // Base91 decoding (mengikuti algoritma basE91 klasik)
-    function decodeBase91(data) {
-      try {
-        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~\"";
-        var v = -1, b = 0, n = 0;
-        var out = "";
-        for (var i = 0; i < data.length; i++) {
-          var d = alphabet.indexOf(data[i]);
-          if (d === -1) continue;
-          if (v < 0) {
-            v = d;
-          } else {
-            v += d * 91;
-            b |= v << n;
-            n += ((v & 8191) > 88) ? 13 : 14;
-            while (n >= 8) {
-              out += String.fromCharCode(b & 255);
-              b >>= 8;
-              n -= 8;
-            }
-            v = -1;
-          }
+    function encodeBase91(str) {
+      var b = 0, n = 0, out = "";
+      var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~\"";
+      for (var i = 0; i < str.length; i++) {
+        b |= str.charCodeAt(i) << n;
+        n += 8;
+        if (n > 13) {
+          var v = b & 8191;
+          if (v > 88) { b >>= 13; n -= 13; }
+          else { v = b & 16383; b >>= 14; n -= 14; }
+          out += alphabet[v % 91] + alphabet[Math.floor(v / 91)];
         }
-        if (v >= 0) {
-          b |= v << n;
-          n += 7;
-          while (n >= 8) {
-            out += String.fromCharCode(b & 255);
-            b >>= 8;
-            n -= 8;
-          }
-        }
-        return out;
-      } catch (e) {
-        return "Error: " + e.message;
       }
+      if (n) {
+        out += alphabet[b % 91];
+        if (n > 7 || b > 90) { out += alphabet[Math.floor(b / 91)]; }
+      }
+      return out;
     }
     
-    // JSObfuscate decoding: lakukan atob lalu balik string kembali
-    function decodeJSObfuscate(str) {
-      try {
-        return atob(str).split("").reverse().join("");
-      } catch (e) {
-        return "Error: " + e.message;
-      }
+    function encodeJSObfuscate(str) {
+      return btoa(str.split("").reverse().join(""));
     }
     
-    // Punycode decoding: hapus prefix "xn--" dan decode hex
-    function decodePunycode(str) {
-      try {
-        if (str.startsWith("xn--")) {
-          return decodeHex(str.slice(4));
-        }
-        return str;
-      } catch (e) {
-        return "Error: " + e.message;
-      }
+    function encodePunycode(str) {
+      return "xn--" + encodeHex(str);
     }
     
-    // Brainfuck decoding: hitung jumlah karakter '+' sebelum setiap titik
-    function decodeBrainfuck(str) {
-      try {
-        var parts = str.split(".");
-        var result = "";
-        parts.forEach(function(part) {
-          if (part.length > 0) {
-            result += String.fromCharCode(part.length);
-          }
-        });
-        return result;
-      } catch (e) {
-        return "Error: " + e.message;
+    function encodeBrainfuck(str) {
+      var bf = "";
+      for (var i = 0; i < str.length; i++) {
+        var code = str.charCodeAt(i);
+        bf += "+".repeat(code) + ".";
       }
+      return bf;
     }
     
-    // Base4096 decoding: setiap karakter dikodekan dari 12-bit
-    function decodeBase4096(str) {
-      try {
-        var bits = "";
-        for (var i = 0; i < str.length; i++) {
-          var num = str.charCodeAt(i) - 0x1000;
-          bits += num.toString(2).padStart(12, "0");
-        }
-        var result = "";
-        for (var i = 0; i + 8 <= bits.length; i += 8) {
-          var byte = bits.substr(i, 8);
-          result += String.fromCharCode(parseInt(byte, 2));
-        }
-        return result;
-      } catch (e) {
-        return "Error: " + e.message;
+    function encodeBase4096(str) {
+      var bits = "";
+      for (var i = 0; i < str.length; i++) {
+        bits += str.charCodeAt(i).toString(2).padStart(8, "0");
       }
+      var pad = (12 - (bits.length % 12)) % 12;
+      bits = bits.padEnd(bits.length + pad, "0");
+      var res = "";
+      for (var i = 0; i < bits.length; i += 12) {
+        var chunk = bits.substr(i, 12);
+        var num = parseInt(chunk, 2);
+        res += String.fromCharCode(num + 0x1000);
+      }
+      return res;
     }
     
-    // DNA decoding: setiap 4 huruf mewakili 8-bit
-    function decodeDNA(str) {
-      try {
-        var mapping = {"A": "00", "C": "01", "G": "10", "T": "11"};
-        var result = "";
-        for (var i = 0; i < str.length; i += 4) {
-          var chunk = str.substr(i, 4);
-          if (chunk.length < 4) break;
-          var bin = "";
-          for (var j = 0; j < 4; j++) {
-            bin += mapping[chunk[j]];
-          }
-          result += String.fromCharCode(parseInt(bin, 2));
+    function encodeDNA(str) {
+      var mapping = {"00": "A", "01": "C", "10": "G", "11": "T"};
+      var res = "";
+      for (var i = 0; i < str.length; i++) {
+        var bin = str.charCodeAt(i).toString(2).padStart(8, "0");
+        for (var j = 0; j < 8; j += 2) {
+          var pair = bin.substr(j, 2);
+          res += mapping[pair];
         }
-        return result;
-      } catch (e) {
-        return "Error: " + e.message;
       }
+      return res;
     }
     
     // ===========================================================
-    // Bagian 2: Mapping Metode Decoding
+    // Bagian 3: Metode Netcyzen (AES-256, RSA-4096, Quantum Crypto)
     // ===========================================================
-    var decodeFunctions = {
-      "base64": decodeBase64,
-      "charcodes": decodeCharCodes,
-      "url": decodeURL,
-      "morse": decodeMorse,
-      "binary": decodeBinary,
-      "rot13": decodeRot13,
-      "hex": decodeHex,
-      "atbash": decodeAtbash,
-      "base85": decodeBase85,
-      "base91": decodeBase91,
-      "jsobfuscate": decodeJSObfuscate,
-      "punycode": decodePunycode,
-      "brainfuck": decodeBrainfuck,
-      "base4096": decodeBase4096,
-      "dna": decodeDNA
-    };
+    async function encodeAES256(str, key) {
+      const enc = new TextEncoder();
+      const keyMaterial = await window.crypto.subtle.importKey("raw", enc.encode(key), { name: "PBKDF2" }, false, ["deriveKey"]);
+      const derivedKey = await window.crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: enc.encode("s@lt"), iterations: 100000, hash: "SHA-256" },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        true,
+        ["encrypt"]
+      );
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const encrypted = await window.crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        derivedKey,
+        enc.encode(str)
+      );
+      return btoa(String.fromCharCode(...new Uint8Array(encrypted))) + '.' + btoa(String.fromCharCode(...iv));
+    }
+    
+    async function encodeRSA4096(str) {
+      const keyPair = await window.crypto.subtle.generateKey(
+        { name: "RSA-OAEP", modulusLength: 4096, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" },
+        true,
+        ["encrypt", "decrypt"]
+      );
+      const enc = new TextEncoder();
+      const encrypted = await window.crypto.subtle.encrypt(
+        { name: "RSA-OAEP" },
+        keyPair.publicKey,
+        enc.encode(str)
+      );
+      return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+    }
+    
+    function encodeQuantumCrypto(str) {
+      return str.split('').map(char => {
+        let quantumCode = char.charCodeAt(0) * Math.random() * 1000;
+        return quantumCode.toString(16);
+      }).join('-');
+    }
     
     // ===========================================================
-    // Bagian 3: Event Listener dan Clipboard
+    // Bagian 4: Proses Pengumpulan Hasil Encoding
     // ===========================================================
-    document.getElementById("decodeButton").addEventListener("click", async function() {
+    
+    // Encode Full: Gunakan semua fungsi dasar
+    async function processEncodingsFull(input) {
+      var results = [];
+      try { results.push(encodeBase64(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeCharCodes(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeURL(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeMorse(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBinary(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeRot13(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeHex(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeAtbash(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBase85(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBase91(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeJSObfuscate(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodePunycode(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBrainfuck(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeBase4096(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeDNA(input)); } catch(e) { results.push("Err:" + e.message); }
+      return results;
+    }
+    
+    // Encode Netcyzen: Gunakan metode AES-256, RSA-4096, Quantum Crypto
+    async function processEncodingsNetcyzen(input) {
+      var results = [];
+      try { results.push(await encodeAES256(input, "secretKey")); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(await encodeRSA4096(input)); } catch(e) { results.push("Err:" + e.message); }
+      try { results.push(encodeQuantumCrypto(input)); } catch(e) { results.push("Err:" + e.message); }
+      return results;
+    }
+    
+    function combineEncodings(results) {
+      var take = 4;
+      return results.map(function(r) { return r.substr(0, take); }).join("");
+    }
+    
+    function advancedCombineEncodings(results) {
+      var basic = combineEncodings(results);
+      var chars = basic.split("");
+      for (var i = chars.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = chars[i];
+        chars[i] = chars[j];
+        chars[j] = tmp;
+      }
+      var obfus = chars.map(function(ch) {
+        var hx = ch.charCodeAt(0).toString(16);
+        var rev = hx.split("").reverse().join("");
+        var rand = ["x", "y", "z"][Math.floor(Math.random() * 3)];
+        return rev + rand;
+      });
+      var delims = ["|", "*", "#"];
+      for (var i = delims.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = delims[i];
+        delims[i] = delims[j];
+        delims[j] = tmp;
+      }
+      var delim = delims.join("");
+      return obfus.join(delim);
+    }
+    
+    // ===========================================================
+    // Bagian 5: Event Listener dan Clipboard
+    // ===========================================================
+    document.getElementById("encodeFullButton").addEventListener("click", async function() {
       try {
         var inp = document.getElementById("inputText").value;
-        var method = document.getElementById("decodeMethod").value;
         var outputArea = document.getElementById("outputText");
         var loadingElem = document.getElementById("loading");
-        // Tampilkan spinner loading
         loadingElem.style.display = "block";
         outputArea.textContent = "";
-        // Simulasi delay 2 detik untuk efek loading
         var res = await new Promise((resolve) => {
-          setTimeout(() => {
-            // Panggil fungsi decoding yang sesuai
-            if (decodeFunctions[method]) {
-              resolve(decodeFunctions[method](inp));
-            } else {
-              resolve("Metode decoding tidak ditemukan.");
-            }
-          }, 2000);
+          setTimeout(() => { resolve(processEncodingsFull(inp)); }, 2000);
         });
-        outputArea.textContent = res;
+        var out = advancedCombineEncodings(res);
+        outputArea.textContent = out;
         loadingElem.style.display = "none";
       } catch (e) {
-        document.getElementById("outputText").textContent = "Err processing: " + e.message;
+        outputArea.textContent = "Err processing: " + e.message;
         console.error(e);
-        document.getElementById("loading").style.display = "none";
+        loadingElem.style.display = "none";
+      }
+    });
+    
+    document.getElementById("encodeNetcyzenButton").addEventListener("click", async function() {
+      try {
+        var inp = document.getElementById("inputText").value;
+        var outputArea = document.getElementById("outputText");
+        var loadingElem = document.getElementById("loading");
+        loadingElem.style.display = "block";
+        outputArea.textContent = "";
+        var res = await new Promise((resolve) => {
+          setTimeout(() => { resolve(processEncodingsNetcyzen(inp)); }, 2000);
+        });
+        var out = advancedCombineEncodings(res);
+        outputArea.textContent = out;
+        loadingElem.style.display = "none";
+      } catch (e) {
+        outputArea.textContent = "Err processing: " + e.message;
+        console.error(e);
+        loadingElem.style.display = "none";
       }
     });
     
