@@ -13,7 +13,6 @@
       --error-color: #e74c3c;
       --success-color: #2ecc71;
     }
-
     body {
       font-family: 'Consolas', monospace;
       background: var(--background);
@@ -22,22 +21,26 @@
       padding: 20px;
       min-height: 100vh;
     }
-
     .container {
       max-width: 800px;
       margin: 0 auto;
+    }
+    h1 {
       text-align: center;
     }
-
-    .header {
-      margin-bottom: 2rem;
+    textarea {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      border: 1px solid #3d3d3d;
+      border-radius: 6px;
+      padding: 15px;
+      font-size: 14px;
+      line-height: 1.5;
+      width: 100%;
+      box-sizing: border-box;
+      resize: vertical;
+      margin-bottom: 20px;
     }
-
-    h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-
     pre {
       background: #2d2d2d;
       color: #f8f8f2;
@@ -49,11 +52,8 @@
       overflow-x: auto;
       white-space: pre-wrap;
       word-wrap: break-word;
-      text-align: left;
-      max-height: 300px;
-      margin: 0 auto;
+      margin-bottom: 20px;
     }
-
     .button {
       background: var(--secondary-color);
       color: white;
@@ -64,9 +64,8 @@
       transition: all 0.3s ease;
       text-transform: uppercase;
       font-weight: bold;
-      margin-top: 20px;
+      width: 100%;
     }
-
     .button:hover {
       background: #2980b9;
     }
@@ -74,16 +73,16 @@
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <h1>🧪 Test Obfuscated Code</h1>
-      <p>Hasil eksekusi kode:</p>
-    </div>
-    <pre id="logOutput"></pre>
+    <h1>🧪 Test Obfuscated Code</h1>
+    <p>Masukkan kode obfuscated (atau kode lain) yang ingin diuji:</p>
+    <textarea id="codeInput" placeholder="Tempel kode di sini..."></textarea>
     <button class="button" id="runButton">Jalankan Kode</button>
+    <h3>Hasil Eksekusi:</h3>
+    <pre id="logOutput"></pre>
   </div>
 
   <script>
-    // Menangkap log dari console dan menampilkannya di halaman
+    // Fungsi untuk menangkap log dari console dan menampilkannya di halaman
     (function() {
       const logOutput = document.getElementById('logOutput');
       const originalLog = console.log;
@@ -99,13 +98,23 @@
     })();
 
     document.getElementById('runButton').addEventListener('click', function() {
-      const code = localStorage.getItem('obfuscatedCode');
+      const codeInput = document.getElementById('codeInput').value.trim();
+      let code = codeInput;
+      
+      // Jika textarea kosong, ambil kode dari localStorage
       if (!code) {
-        document.getElementById('logOutput').textContent = "Tidak ada kode obfuscated untuk dijalankan!";
-        return;
+        code = localStorage.getItem('obfuscatedCode');
+        if (!code) {
+          document.getElementById('logOutput').textContent = "Tidak ada kode untuk dijalankan!";
+          return;
+        }
       }
+      
+      // Bersihkan hasil log sebelumnya
+      document.getElementById('logOutput').textContent = "";
+      
       try {
-        // Buat fungsi baru dari kode obfuscated dan jalankan
+        // Buat fungsi baru dari kode dan jalankan
         const runFunction = new Function(code);
         runFunction();
         console.log("✅ Kode berhasil dijalankan tanpa error!");
