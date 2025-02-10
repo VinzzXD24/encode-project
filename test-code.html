@@ -1,73 +1,35 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Test Obfuscated Code</title>
+  <meta charset="UTF-8">
+  <title>Test Kode JavaScript & Node.js</title>
   <style>
-    :root {
-      --primary-color: #2c3e50;
-      --secondary-color: #3498db;
-      --background: #1a1a1a;
-      --text-color: #ecf0f1;
-      --error-color: #e74c3c;
-      --success-color: #2ecc71;
-    }
     body {
       font-family: 'Consolas', monospace;
-      background: var(--background);
-      color: var(--text-color);
-      margin: 0;
+      background: #1a1a1a;
+      color: #ecf0f1;
       padding: 20px;
-      min-height: 100vh;
-    }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    h1 {
-      text-align: center;
     }
     textarea {
-      background: #2d2d2d;
-      color: #f8f8f2;
-      border: 1px solid #3d3d3d;
-      border-radius: 6px;
-      padding: 15px;
-      font-size: 14px;
-      line-height: 1.5;
       width: 100%;
-      box-sizing: border-box;
-      resize: vertical;
-      margin-bottom: 20px;
-    }
-    pre {
+      height: 200px;
       background: #2d2d2d;
       color: #f8f8f2;
       border: 1px solid #3d3d3d;
-      border-radius: 6px;
-      padding: 15px;
+      padding: 10px;
+      resize: vertical;
       font-size: 14px;
-      line-height: 1.5;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      margin-bottom: 20px;
     }
-    .button {
-      background: var(--secondary-color);
+    button {
+      padding: 10px 20px;
+      background: #3498db;
       color: white;
       border: none;
-      padding: 12px 24px;
-      border-radius: 4px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      font-weight: bold;
-      width: 100%;
-      margin-bottom: 20px;
+      margin-right: 10px;
+      margin-top: 10px;
     }
-    .button:hover {
+    button:hover {
       background: #2980b9;
     }
     .loading {
@@ -76,91 +38,124 @@
       margin: 20px 0;
     }
     .spinner {
-      margin: 0 auto;
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top-color: var(--secondary-color);
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top: 4px solid #3498db;
       border-radius: 50%;
+      width: 30px;
+      height: 30px;
       animation: spin 1s linear infinite;
+      margin: 10px auto;
     }
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    pre {
+      background: #2d2d2d;
+      padding: 10px;
+      border: 1px solid #3d3d3d;
+      overflow-x: auto;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🧪 Test Obfuscated Code</h1>
-    <p>Masukkan kode obfuscated (atau kode lain) yang ingin diuji:</p>
-    <textarea id="codeInput" placeholder="Tempel kode di sini..."></textarea>
-    <button class="button" id="runButton">Jalankan Kode</button>
-
-    <div class="loading" id="loading">
-      <div class="spinner"></div>
-      <p>Processing...</p>
-    </div>
-
-    <h3>Hasil Eksekusi:</h3>
-    <pre id="logOutput"></pre>
+  <h1>Test Kode JavaScript & Node.js</h1>
+  <p>Masukkan kode Anda:</p>
+  <textarea id="codeInput" placeholder="Masukkan kode di sini..."></textarea>
+  <br>
+  <!-- Tombol untuk menjalankan kode di browser -->
+  <button id="runBrowserBtn">Jalankan di Browser</button>
+  <!-- Tombol untuk mengirim kode ke server (Node.js) -->
+  <button id="runNodeBtn">Jalankan di Node.js</button>
+  
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Processing...</p>
   </div>
-
+  
+  <h2>Hasil Eksekusi:</h2>
+  <pre id="output"></pre>
+  
   <script>
-    // Tangkap log console dan tampilkan di halaman
+    // Fungsi untuk menampilkan/menyembunyikan loading spinner
+    function showLoading(show) {
+      document.getElementById("loading").style.display = show ? "block" : "none";
+    }
+    
+    // Fungsi untuk membersihkan output
+    function clearOutput() {
+      document.getElementById("output").textContent = "";
+    }
+    
+    // Override console.log dan console.error agar hasil dioutputkan ke elemen <pre>
     (function() {
-      const logOutput = document.getElementById('logOutput');
+      const outputEl = document.getElementById("output");
       const originalLog = console.log;
       const originalError = console.error;
       console.log = function(...args) {
         originalLog.apply(console, args);
-        logOutput.textContent += args.join(' ') + "\n";
+        outputEl.textContent += args.join(" ") + "\n";
       };
       console.error = function(...args) {
         originalError.apply(console, args);
-        logOutput.textContent += "Error: " + args.join(' ') + "\n";
+        outputEl.textContent += "Error: " + args.join(" ") + "\n";
       };
     })();
-
-    document.getElementById('runButton').addEventListener('click', function() {
-      const codeInput = document.getElementById('codeInput').value.trim();
-      let code = codeInput;
-      
-      // Jika textarea kosong, ambil kode dari localStorage (misalnya kode obfuscated dari index.html)
+    
+    // Eksekusi kode di browser (client-side)
+    document.getElementById("runBrowserBtn").addEventListener("click", function() {
+      clearOutput();
+      const code = document.getElementById("codeInput").value;
       if (!code) {
-        code = localStorage.getItem('obfuscatedCode');
-        if (!code) {
-          document.getElementById('logOutput').textContent = "Tidak ada kode untuk dijalankan!";
-          return;
-        }
+        alert("Masukkan kode terlebih dahulu!");
+        return;
       }
-      
-      // Tampilkan loading dan bersihkan log sebelumnya
-      const loading = document.getElementById('loading');
-      loading.style.display = "block";
-      document.getElementById('logOutput').textContent = "";
-      
-      // Simulasikan delay 3000ms agar loading terlihat dan proses eksekusi kode terasa lebih nyata
+      showLoading(true);
+      // Simulasikan delay 3 detik untuk efek loading
       setTimeout(() => {
         try {
-          const runFunction = new Function(code);
-          runFunction();
-          console.log("✅ Kode berhasil dijalankan tanpa error!");
-        } catch (error) {
-          // Menyertakan error message beserta lokasi error dari stack trace (jika tersedia)
-          let errorDetails = "❌ Error: " + error.message;
-          if (error.stack) {
-            const stackLines = error.stack.split("\n");
-            if (stackLines.length > 1) {
-              errorDetails += "\nKomentar: Error terjadi di " + stackLines[1].trim();
-            } else {
-              errorDetails += "\n" + error.stack;
-            }
+          // Jalankan kode menggunakan new Function (di browser)
+          const runFn = new Function(code);
+          runFn();
+          console.log("✅ Kode berhasil dijalankan di browser tanpa error!");
+        } catch (err) {
+          console.error("❌ Error: " + err.message);
+          if (err.stack) {
+            console.error("Stack Trace: " + err.stack);
           }
-          console.error(errorDetails);
-        } finally {
-          loading.style.display = "none";
         }
+        showLoading(false);
       }, 3000);
+    });
+    
+    // Kirim kode ke server agar dijalankan dengan Node.js
+    document.getElementById("runNodeBtn").addEventListener("click", function() {
+      clearOutput();
+      const code = document.getElementById("codeInput").value;
+      if (!code) {
+        alert("Masukkan kode terlebih dahulu!");
+        return;
+      }
+      showLoading(true);
+      fetch("/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code })
+      })
+      .then(response => response.json())
+      .then(data => {
+        showLoading(false);
+        if (data.error) {
+          document.getElementById("output").textContent = data.error;
+        } else {
+          document.getElementById("output").textContent = data.result;
+        }
+      })
+      .catch(err => {
+        showLoading(false);
+        document.getElementById("output").textContent = "Request Error: " + err.message;
+      });
     });
   </script>
 </body>
