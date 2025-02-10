@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Test Obfuscated Code</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --background: #1a1a1a;
+      --text-color: #ecf0f1;
+      --error-color: #e74c3c;
+      --success-color: #2ecc71;
+    }
+
+    body {
+      font-family: 'Consolas', monospace;
+      background: var(--background);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .header {
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      border: 1px solid #3d3d3d;
+      border-radius: 6px;
+      padding: 15px;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      text-align: left;
+      max-height: 300px;
+      margin: 0 auto;
+    }
+
+    .button {
+      background: var(--secondary-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .button:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧪 Test Obfuscated Code</h1>
+      <p>Hasil eksekusi kode:</p>
+    </div>
+    <pre id="logOutput"></pre>
+    <button class="button" id="runButton">Jalankan Kode</button>
+  </div>
+
+  <script>
+    // Menangkap log dari console dan menampilkannya di halaman
+    (function() {
+      const logOutput = document.getElementById('logOutput');
+      const originalLog = console.log;
+      const originalError = console.error;
+      console.log = function(...args) {
+        originalLog.apply(console, args);
+        logOutput.textContent += args.join(' ') + "\n";
+      };
+      console.error = function(...args) {
+        originalError.apply(console, args);
+        logOutput.textContent += "Error: " + args.join(' ') + "\n";
+      };
+    })();
+
+    document.getElementById('runButton').addEventListener('click', function() {
+      const code = localStorage.getItem('obfuscatedCode');
+      if (!code) {
+        document.getElementById('logOutput').textContent = "Tidak ada kode obfuscated untuk dijalankan!";
+        return;
+      }
+      try {
+        // Buat fungsi baru dari kode obfuscated dan jalankan
+        const runFunction = new Function(code);
+        runFunction();
+        console.log("✅ Kode berhasil dijalankan tanpa error!");
+      } catch (error) {
+        console.error("❌ Error: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
