@@ -5,21 +5,13 @@ async function sendMessage() {
         return;
     }
 
-    const apiKey = "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"; // Ganti dengan API key OpenAI
     const responseBox = document.getElementById("response");
-
     responseBox.innerHTML = "Menunggu respon...";
 
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const res = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [{ role: "user", content: message }],
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
     });
 
     const data = await res.json();
