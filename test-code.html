@@ -125,7 +125,7 @@
       const codeInput = document.getElementById('codeInput').value.trim();
       let code = codeInput;
       
-      // Jika textarea kosong, ambil kode dari localStorage
+      // Jika textarea kosong, ambil kode dari localStorage (misalnya kode obfuscated dari index.html)
       if (!code) {
         code = localStorage.getItem('obfuscatedCode');
         if (!code) {
@@ -139,14 +139,24 @@
       loading.style.display = "block";
       document.getElementById('logOutput').textContent = "";
       
-      // Simulasikan delay 3000ms agar loading terlihat
+      // Simulasikan delay 3000ms agar loading terlihat dan proses eksekusi kode terasa lebih nyata
       setTimeout(() => {
         try {
           const runFunction = new Function(code);
           runFunction();
           console.log("✅ Kode berhasil dijalankan tanpa error!");
         } catch (error) {
-          console.error("❌ Error: " + error.message);
+          // Menyertakan error message beserta lokasi error dari stack trace (jika tersedia)
+          let errorDetails = "❌ Error: " + error.message;
+          if (error.stack) {
+            const stackLines = error.stack.split("\n");
+            if (stackLines.length > 1) {
+              errorDetails += "\nKomentar: Error terjadi di " + stackLines[1].trim();
+            } else {
+              errorDetails += "\n" + error.stack;
+            }
+          }
+          console.error(errorDetails);
         } finally {
           loading.style.display = "none";
         }
