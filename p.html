@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Quantum Obfuscator</title>
   <style>
     :root {
@@ -10,6 +10,12 @@
       --secondary-color: #3498db;
       --background: #1a1a1a;
       --text-color: #ecf0f1;
+      --error-color: #e74c3c;
+      --success-color: #2ecc71;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
@@ -22,7 +28,7 @@
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
     }
 
@@ -32,10 +38,22 @@
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       margin-bottom: 2rem;
       border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
 
-    textarea, pre {
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+
+    p.subtitle {
+      margin-top: 10px;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    textarea,
+    pre {
       background: #2d2d2d;
       color: #f8f8f2;
       border: 1px solid #3d3d3d;
@@ -45,12 +63,12 @@
       line-height: 1.5;
       transition: all 0.3s ease;
       width: 100%;
-      box-sizing: border-box;
+      margin-bottom: 20px;
     }
 
     textarea {
       height: 200px;
-      margin-bottom: 20px;
+      resize: vertical;
     }
 
     textarea:focus {
@@ -61,12 +79,13 @@
 
     pre {
       overflow-x: auto;
-      height: 200px;
-      margin-top: 20px;
+      height: auto;
+      max-height: 300px;
     }
 
     .button-group {
       display: flex;
+      flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 20px;
     }
@@ -82,12 +101,33 @@
       text-transform: uppercase;
       font-weight: bold;
       letter-spacing: 1px;
+      flex: 1;
+      min-width: 150px;
     }
 
     button:hover {
       background: #2980b9;
       transform: translateY(-2px);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .message {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .error-message {
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid var(--error-color);
+      color: var(--error-color);
+    }
+
+    .success-message {
+      background: rgba(46, 204, 113, 0.1);
+      border: 1px solid var(--success-color);
+      color: var(--success-color);
     }
 
     .loading {
@@ -107,13 +147,9 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .error-message {
-      color: #e74c3c;
-      margin-bottom: 20px;
-      display: none;
+      to {
+        transform: rotate(360deg);
+      }
     }
   </style>
 </head>
@@ -121,18 +157,18 @@
   <div class="container">
     <div class="header">
       <h1>🛡️ Quantum Obfuscator</h1>
-      <p>Advanced JavaScript Code Protection System</p>
+      <p class="subtitle">Advanced JavaScript Code Protection System</p>
     </div>
 
     <textarea id="inputCode" placeholder="// Masukkan kode JavaScript Anda di sini..."></textarea>
 
-    <div class="error-message" id="errorMessage">
-      Hanya kode JavaScript yang dapat di-obfuscate!
-    </div>
+    <div class="message error-message" id="errorMessage"></div>
+    <div class="message success-message" id="successMessage"></div>
 
     <div class="button-group">
       <button id="encodeButton">🚀 Obfuscate Code</button>
       <button id="copyButton">📋 Copy to Clipboard</button>
+      <button id="testButton">🧪 Test Code</button>
     </div>
 
     <div class="loading" id="loading">
@@ -145,22 +181,23 @@
   </div>
 
   <script>
-    const OBFUSCATION_LEVEL = 3; // 1-5 (Higher = more complex)
-    
+    const OBFUSCATION_LEVEL = 5; // 1-5 (Higher = more complex)
+
     const randomHex = () => Math.random().toString(16).substr(2, 6);
     const randomName = () => `_0x${randomHex()}`;
-    
+
     const stringObfuscator = (str) => {
-      return str.split('')
-        .map(c => Math.random() > 0.5 ? `\\x${c.charCodeAt(0).toString(16)}` : c)
+      return str
+        .split('')
+        .map(c => (Math.random() > 0.5 ? `\\x${c.charCodeAt(0).toString(16)}` : c))
         .join('');
     };
 
     const createMultiArray = (strings) => {
       const chunkSize = Math.ceil(strings.length / OBFUSCATION_LEVEL);
       const arrays = [];
-      
-      for(let i = 0; i < OBFUSCATION_LEVEL; i++) {
+
+      for (let i = 0; i < OBFUSCATION_LEVEL; i++) {
         const chunk = strings.slice(i * chunkSize, (i + 1) * chunkSize);
         arrays.push({
           name: randomName(),
@@ -172,28 +209,29 @@
 
     const generateFakeCode = () => {
       const junkCode = [];
-      for(let i = 0; i < OBFUSCATION_LEVEL * 2; i++) {
+      for (let i = 0; i < OBFUSCATION_LEVEL * 2; i++) {
         junkCode.push(`const ${randomName()}=${Math.floor(Math.random() * 1000)};`);
       }
       return junkCode.join('');
     };
 
     const isJavaScriptCode = (code) => {
-      // Simple check for common JS patterns
+      // Pengecekan sederhana pola JS
       return /(function|=>|const|let|var|return|console\.)/.test(code);
     };
 
     const obfuscateCode = () => {
       const input = document.getElementById("inputCode").value.trim();
       const errorMessage = document.getElementById("errorMessage");
+      const successMessage = document.getElementById("successMessage");
       const loading = document.getElementById("loading");
       const outputCode = document.getElementById("outputCode");
 
-      // Reset UI
+      // Reset pesan dan output
       errorMessage.style.display = "none";
+      successMessage.style.display = "none";
       outputCode.textContent = "";
 
-      // Validation
       if (!input) {
         errorMessage.textContent = "Masukkan kode JavaScript terlebih dahulu!";
         errorMessage.style.display = "block";
@@ -206,32 +244,36 @@
         return;
       }
 
-      // Show loading
+      // Tampilkan loading
       loading.style.display = "block";
 
-      // Simulate processing delay
       setTimeout(() => {
         try {
-          const strings = [...new Set(input.match(/["'`](.*?)["'`]/gs) || [])];
+          const strings =
+            [...new Set(input.match(/["'`](.*?)["'`]/gs) || [])];
           const multiArray = createMultiArray(strings.map(s => s.slice(1, -1)));
           const arrayMap = new Map();
-          
-          multiArray.forEach((arr, i) => {
+
+          multiArray.forEach(arr => {
             arr.values.forEach((val, j) => {
-              arrayMap.set(strings[i * arr.values.length + j], `${arr.name}[${j}]`);
+              // Pemetaan: string asli => array identifier
+              const index = multiArray.indexOf(arr) * arr.values.length + j;
+              if (strings[index]) {
+                arrayMap.set(strings[index], `${arr.name}[${j}]`);
+              }
             });
           });
 
           let output = input;
-          strings.forEach((s, i) => {
-            output = output.split(s).join(arrayMap.get(s));
+          strings.forEach(s => {
+            if (arrayMap.has(s)) {
+              output = output.split(s).join(arrayMap.get(s));
+            }
           });
 
-          const wrapperName = randomName();
-          const initCode = multiArray.map(arr => 
-            `const ${arr.name}=[${arr.values}];`
-          ).join('');
-          
+          const initCode = multiArray
+            .map(arr => `const ${arr.name}=[${arr.values}];`)
+            .join('');
           const finalCode = [
             `(function(){`,
             `'use strict';`,
@@ -242,25 +284,38 @@
           ].join('\n');
 
           outputCode.textContent = finalCode;
+          successMessage.textContent = "Kode berhasil di-obfuscate dan siap digunakan!";
+          successMessage.style.display = "block";
         } catch (error) {
           errorMessage.textContent = "Terjadi kesalahan saat meng-obfuscate kode!";
           errorMessage.style.display = "block";
         } finally {
           loading.style.display = "none";
         }
-      }, 1500); // Simulate 1.5 second processing time
+      }, 1500);
+    };
+
+    const testCode = () => {
+      const outputCode = document.getElementById("outputCode").textContent;
+      if (!outputCode) {
+        alert("Tidak ada kode untuk di-test!");
+        return;
+      }
+      // Simpan kode obfuscated di localStorage agar dapat diambil oleh test-code.html
+      localStorage.setItem("obfuscatedCode", outputCode);
+      // Buka halaman pengujian di tab baru
+      window.open("test-code.html", "_blank");
     };
 
     document.getElementById("encodeButton").addEventListener("click", obfuscateCode);
-    
     document.getElementById("copyButton").addEventListener("click", () => {
       const output = document.getElementById("outputCode").textContent;
       if (!output) return alert("Tidak ada output untuk disalin!");
-      
       navigator.clipboard.writeText(output)
         .then(() => alert("Output berhasil disalin!"))
         .catch(() => alert("Gagal menyalin!"));
     });
+    document.getElementById("testButton").addEventListener("click", testCode);
   </script>
 </body>
 </html>
