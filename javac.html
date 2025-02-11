@@ -2,27 +2,39 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Obfuscate Code – Semirip Mungkin</title>
+  <!-- Pastikan tampilan responsive dengan meta viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obfuscate Code – Responsive</title>
   <style>
+    /* Reset sederhana dan style global */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: Consolas, monospace;
       background: #1a1a1a;
       color: #ecf0f1;
-      margin: 0;
       padding: 20px;
       display: flex;
       justify-content: center;
     }
     .container {
+      width: 90%;
       max-width: 600px;
-      width: 100%;
+      margin: auto;
+    }
+    h1, h2, p {
+      text-align: center;
+      margin-bottom: 10px;
     }
     textarea, button, pre {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
       border-radius: 4px;
-      box-sizing: border-box;
+      font-size: 16px;
     }
     textarea, pre {
       background: #2d2d2d;
@@ -45,6 +57,12 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+    @media screen and (max-width: 400px) {
+      textarea, pre, button {
+         font-size: 14px;
+         padding: 8px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -59,83 +77,84 @@
       <button id="copyBtn">Copy to Clipboard</button>
       <button id="downloadBtn">Download File</button>
     </div>
-
-    <!-- Gunakan CDN yang Anda minta -->
-    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
-    <script>
-      document.getElementById("obfuscateBtn").addEventListener("click", function() {
-        var inputCode = document.getElementById("inputCode").value;
-        var outputEl = document.getElementById("outputCode");
-
-        if (!inputCode) {
-          alert("Masukkan kode terlebih dahulu!");
-          return;
-        }
-
-        try {
-          var obfuscationResult = JavaScriptObfuscator.obfuscate(
-            inputCode,
-            {
-              compact: true,
-              controlFlowFlattening: true,
-              controlFlowFlatteningThreshold: 1,
-              deadCodeInjection: true,
-              deadCodeInjectionThreshold: 1,
-              debugProtection: false,
-              debugProtectionInterval: 0,  // Gunakan 0 untuk menonaktifkan interval
-              disableConsoleOutput: false,
-              identifierNamesGenerator: 'mangled',
-              numbersToExpressions: true,
-              renameGlobals: false,
-              rotateStringArray: true,
-              selfDefending: true,
-              stringArray: true,
-              stringArrayEncoding: ['rc4'],
-              stringArrayThreshold: 1,
-              transformObjectKeys: true,
-              unicodeEscapeSequence: false
-            }
-          );
-          var obfuscatedCode = obfuscationResult.getObfuscatedCode();
-          outputEl.textContent = obfuscatedCode;
-        } catch (error) {
-          console.error("Error during obfuscation: ", error);
-          outputEl.textContent = "Error during obfuscation: " + error;
-        }
-      });
-
-      document.getElementById("copyBtn").addEventListener("click", function() {
-        var outputCode = document.getElementById("outputCode").textContent;
-        if (!outputCode) {
-          alert("Tidak ada output untuk disalin!");
-          return;
-        }
-        navigator.clipboard.writeText(outputCode)
-          .then(function() {
-            alert("Output berhasil disalin ke clipboard!");
-          })
-          .catch(function(err) {
-            alert("Gagal menyalin: " + err);
-          });
-      });
-
-      document.getElementById("downloadBtn").addEventListener("click", function() {
-        var outputCode = document.getElementById("outputCode").textContent;
-        if (!outputCode) {
-          alert("Tidak ada output untuk diunduh!");
-          return;
-        }
-        var blob = new Blob([outputCode], { type: 'text/plain' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "obfuscatedCode.js";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      });
-    </script>
   </div>
+
+  <!-- Gunakan CDN yang Anda minta -->
+  <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
+  <script>
+    // Obfuscation dan fungsi-fungsi tambahan
+    document.getElementById("obfuscateBtn").addEventListener("click", function() {
+      var inputCode = document.getElementById("inputCode").value;
+      var outputEl = document.getElementById("outputCode");
+
+      if (!inputCode) {
+        alert("Masukkan kode terlebih dahulu!");
+        return;
+      }
+
+      try {
+        var obfuscationResult = JavaScriptObfuscator.obfuscate(
+          inputCode,
+          {
+            compact: true,
+            controlFlowFlattening: true,
+            controlFlowFlatteningThreshold: 1,
+            deadCodeInjection: true,
+            deadCodeInjectionThreshold: 1,
+            debugProtection: false,
+            debugProtectionInterval: 0,  // Gunakan 0 untuk menonaktifkan interval
+            disableConsoleOutput: false,
+            identifierNamesGenerator: 'mangled',
+            numbersToExpressions: true,
+            renameGlobals: false,
+            rotateStringArray: true,
+            selfDefending: true,
+            stringArray: true,
+            stringArrayEncoding: ['rc4'],
+            stringArrayThreshold: 1,
+            transformObjectKeys: true,
+            unicodeEscapeSequence: false
+          }
+        );
+        var obfuscatedCode = obfuscationResult.getObfuscatedCode();
+        outputEl.textContent = obfuscatedCode;
+      } catch (error) {
+        console.error("Error during obfuscation: ", error);
+        outputEl.textContent = "Error during obfuscation: " + error;
+      }
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", function() {
+      var outputCode = document.getElementById("outputCode").textContent;
+      if (!outputCode) {
+        alert("Tidak ada output untuk disalin!");
+        return;
+      }
+      navigator.clipboard.writeText(outputCode)
+        .then(function() {
+          alert("Output berhasil disalin ke clipboard!");
+        })
+        .catch(function(err) {
+          alert("Gagal menyalin: " + err);
+        });
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", function() {
+      var outputCode = document.getElementById("outputCode").textContent;
+      if (!outputCode) {
+        alert("Tidak ada output untuk diunduh!");
+        return;
+      }
+      var blob = new Blob([outputCode], { type: 'text/plain' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "obfuscatedCode.js";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
 </body>
 </html>
