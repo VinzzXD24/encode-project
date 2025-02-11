@@ -2,11 +2,10 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Pastikan tampilan responsive dengan meta viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Obfuscate Code – Responsive</title>
+  <title>Obfuscate Code</title>
   <style>
-    /* Reset sederhana dan style global */
+    /* Style responsif */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -68,7 +67,7 @@
 <body>
   <div class="container">
     <h1>Obfuscate Code</h1>
-    <p>Masukkan kode yang ingin di-obfuscate:</p>
+    <p>Masukkan kode yang ingin di‑obfuscate:</p>
     <textarea id="inputCode" rows="10" placeholder="Masukkan kode di sini..."></textarea>
     <button id="obfuscateBtn">Obfuscate Code</button>
     <h2>Obfuscated Output:</h2>
@@ -78,11 +77,10 @@
       <button id="downloadBtn">Download File</button>
     </div>
   </div>
-
-  <!-- Gunakan CDN yang Anda minta -->
+  
+  <!-- Muat JavaScript Obfuscator dari CDN -->
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
   <script>
-    // Obfuscation dan fungsi-fungsi tambahan
     document.getElementById("obfuscateBtn").addEventListener("click", function() {
       var inputCode = document.getElementById("inputCode").value;
       var outputEl = document.getElementById("outputCode");
@@ -102,7 +100,7 @@
             deadCodeInjection: true,
             deadCodeInjectionThreshold: 1,
             debugProtection: false,
-            debugProtectionInterval: 0,  // Gunakan 0 untuk menonaktifkan interval
+            debugProtectionInterval: 0,  // 0 untuk menonaktifkan
             disableConsoleOutput: false,
             identifierNamesGenerator: 'mangled',
             numbersToExpressions: true,
