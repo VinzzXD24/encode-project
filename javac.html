@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Obfuscate Code – Semirip Mungkin</title>
+  <title>Obfuscate Code</title>
   <style>
     body {
       font-family: Consolas, monospace;
@@ -34,11 +34,9 @@
   </style>
 </head>
 <body>
-  <h1>Obfuscate Code</h1>
-  <p>Masukkan kode yang ingin di-obfuscate:</p>
+  <!-- Konten HTML -->
   <textarea id="inputCode" rows="10" placeholder="Masukkan kode di sini..."></textarea>
   <button id="obfuscateBtn">Obfuscate Code</button>
-  <h2>Obfuscated Output:</h2>
   <pre id="outputCode"></pre>
 
   <!-- Sertakan pustaka JavaScript Obfuscator dari CDN -->
@@ -59,20 +57,20 @@
           {
             compact: true,
             controlFlowFlattening: true,
-            controlFlowFlatteningThreshold: 1, // Maksimum flattening
+            controlFlowFlatteningThreshold: 1,
             deadCodeInjection: true,
-            deadCodeInjectionThreshold: 1,       // Sisipkan kode mati sebanyak mungkin
+            deadCodeInjectionThreshold: 1,
             debugProtection: false,
             debugProtectionInterval: false,
             disableConsoleOutput: false,
-            identifierNamesGenerator: 'mangled', // Nama variabel diacak (mangled)
+            identifierNamesGenerator: 'mangled',
             numbersToExpressions: true,
             renameGlobals: false,
             rotateStringArray: true,
             selfDefending: true,
             stringArray: true,
-            stringArrayEncoding: ['rc4'],         // Encoding array string dengan RC4
-            stringArrayThreshold: 1,                // Gunakan array string untuk semua string
+            stringArrayEncoding: ['rc4'],
+            stringArrayThreshold: 1,
             transformObjectKeys: true,
             unicodeEscapeSequence: false
           }
@@ -87,4 +85,3 @@
   </script>
 </body>
 </html>
-
