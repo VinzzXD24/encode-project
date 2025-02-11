@@ -1,1 +1,90 @@
-hhjhhhhh
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Obfuscate Code – Semirip Mungkin</title>
+  <style>
+    body {
+      font-family: Consolas, monospace;
+      background: #1a1a1a;
+      color: #ecf0f1;
+      padding: 20px;
+    }
+    textarea, button, pre {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    textarea, pre {
+      background: #2d2d2d;
+      border: 1px solid #444;
+      color: #f8f8f2;
+    }
+    button {
+      background: #3498db;
+      border: none;
+      color: white;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Obfuscate Code</h1>
+  <p>Masukkan kode yang ingin di-obfuscate:</p>
+  <textarea id="inputCode" rows="10" placeholder="Masukkan kode di sini..."></textarea>
+  <button id="obfuscateBtn">Obfuscate Code</button>
+  <h2>Obfuscated Output:</h2>
+  <pre id="outputCode"></pre>
+
+  <!-- Sertakan pustaka JavaScript Obfuscator dari CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/javascript-obfuscator.min.js"></script>
+  <script>
+    document.getElementById("obfuscateBtn").addEventListener("click", function() {
+      var inputCode = document.getElementById("inputCode").value;
+      var outputEl = document.getElementById("outputCode");
+      
+      if (!inputCode) {
+        alert("Masukkan kode terlebih dahulu!");
+        return;
+      }
+      
+      try {
+        var obfuscationResult = JavaScriptObfuscator.obfuscate(
+          inputCode,
+          {
+            compact: true,
+            controlFlowFlattening: true,
+            controlFlowFlatteningThreshold: 1, // Maksimum flattening
+            deadCodeInjection: true,
+            deadCodeInjectionThreshold: 1,       // Sisipkan kode mati sebanyak mungkin
+            debugProtection: false,
+            debugProtectionInterval: false,
+            disableConsoleOutput: false,
+            identifierNamesGenerator: 'mangled', // Nama variabel diacak (mangled)
+            numbersToExpressions: true,
+            renameGlobals: false,
+            rotateStringArray: true,
+            selfDefending: true,
+            stringArray: true,
+            stringArrayEncoding: ['rc4'],         // Encoding array string dengan RC4
+            stringArrayThreshold: 1,                // Gunakan array string untuk semua string
+            transformObjectKeys: true,
+            unicodeEscapeSequence: false
+          }
+        );
+        var obfuscatedCode = obfuscationResult.getObfuscatedCode();
+        outputEl.textContent = obfuscatedCode;
+      } catch (error) {
+        console.error("Error during obfuscation: ", error);
+        outputEl.textContent = "Error during obfuscation: " + error;
+      }
+    });
+  </script>
+</body>
+</html>
+
