@@ -41,20 +41,20 @@
   <h2>Obfuscated Output:</h2>
   <pre id="outputCode"></pre>
 
-  <!-- Menggunakan unpkg CDN untuk memuat JavaScript Obfuscator -->
-  <script src="https://unpkg.com/javascript-obfuscator@4.0.2/dist/javascript-obfuscator.min.js"></script>
+  <!-- Gunakan CDN yang Anda minta -->
+  <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
   <script>
     document.getElementById("obfuscateBtn").addEventListener("click", function() {
       var inputCode = document.getElementById("inputCode").value;
       var outputEl = document.getElementById("outputCode");
-      
+
       if (!inputCode) {
         alert("Masukkan kode terlebih dahulu!");
         return;
       }
-      
+
       try {
-        // Opsi‑opsi diatur secara agresif untuk menghasilkan output yang mirip
+        // Atur opsi-opsi obfuscation agar hasilnya semirip mungkin dengan contoh Anda
         var obfuscationResult = JavaScriptObfuscator.obfuscate(
           inputCode,
           {
