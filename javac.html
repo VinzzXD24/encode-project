@@ -41,7 +41,7 @@
   <h2>Obfuscated Output:</h2>
   <pre id="outputCode"></pre>
 
-  <!-- Gunakan CDN yang Anda minta -->
+  <!-- Menggunakan CDN yang Anda minta -->
   <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
   <script>
     document.getElementById("obfuscateBtn").addEventListener("click", function() {
@@ -54,7 +54,7 @@
       }
 
       try {
-        // Atur opsi-opsi obfuscation agar hasilnya semirip mungkin dengan contoh Anda
+        // Atur opsi-opsi obfuscation, ganti debugProtectionInterval ke 0 (bukan false)
         var obfuscationResult = JavaScriptObfuscator.obfuscate(
           inputCode,
           {
@@ -64,7 +64,7 @@
             deadCodeInjection: true,
             deadCodeInjectionThreshold: 1,
             debugProtection: false,
-            debugProtectionInterval: false,
+            debugProtectionInterval: 0,  // Harus berupa angka (0 berarti tidak ada interval)
             disableConsoleOutput: false,
             identifierNamesGenerator: 'mangled',
             numbersToExpressions: true,
