@@ -8,18 +8,27 @@
       font-family: Consolas, monospace;
       background: #1a1a1a;
       color: #ecf0f1;
+      margin: 0;
       padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
     }
     textarea, button, pre {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
       border-radius: 4px;
+      box-sizing: border-box;
     }
     textarea, pre {
       background: #2d2d2d;
       border: 1px solid #444;
       color: #f8f8f2;
+      overflow-x: auto;
     }
     button {
       background: #3498db;
@@ -31,60 +40,102 @@
     button:hover {
       background: #2980b9;
     }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
-  <h1>Obfuscate Code</h1>
-  <p>Masukkan kode yang ingin di-obfuscate:</p>
-  <textarea id="inputCode" rows="10" placeholder="Masukkan kode di sini..."></textarea>
-  <button id="obfuscateBtn">Obfuscate Code</button>
-  <h2>Obfuscated Output:</h2>
-  <pre id="outputCode"></pre>
+  <div class="container">
+    <h1>Obfuscate Code</h1>
+    <p>Masukkan kode yang ingin di-obfuscate:</p>
+    <textarea id="inputCode" rows="10" placeholder="Masukkan kode di sini..."></textarea>
+    <button id="obfuscateBtn">Obfuscate Code</button>
+    <h2>Obfuscated Output:</h2>
+    <pre id="outputCode"></pre>
+    <div class="button-group">
+      <button id="copyBtn">Copy to Clipboard</button>
+      <button id="downloadBtn">Download File</button>
+    </div>
 
-  <!-- Menggunakan CDN yang Anda minta -->
-  <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
-  <script>
-    document.getElementById("obfuscateBtn").addEventListener("click", function() {
-      var inputCode = document.getElementById("inputCode").value;
-      var outputEl = document.getElementById("outputCode");
+    <!-- Gunakan CDN yang Anda minta -->
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
+    <script>
+      document.getElementById("obfuscateBtn").addEventListener("click", function() {
+        var inputCode = document.getElementById("inputCode").value;
+        var outputEl = document.getElementById("outputCode");
 
-      if (!inputCode) {
-        alert("Masukkan kode terlebih dahulu!");
-        return;
-      }
+        if (!inputCode) {
+          alert("Masukkan kode terlebih dahulu!");
+          return;
+        }
 
-      try {
-        // Atur opsi-opsi obfuscation, ganti debugProtectionInterval ke 0 (bukan false)
-        var obfuscationResult = JavaScriptObfuscator.obfuscate(
-          inputCode,
-          {
-            compact: true,
-            controlFlowFlattening: true,
-            controlFlowFlatteningThreshold: 1,
-            deadCodeInjection: true,
-            deadCodeInjectionThreshold: 1,
-            debugProtection: false,
-            debugProtectionInterval: 0,  // Harus berupa angka (0 berarti tidak ada interval)
-            disableConsoleOutput: false,
-            identifierNamesGenerator: 'mangled',
-            numbersToExpressions: true,
-            renameGlobals: false,
-            rotateStringArray: true,
-            selfDefending: true,
-            stringArray: true,
-            stringArrayEncoding: ['rc4'],
-            stringArrayThreshold: 1,
-            transformObjectKeys: true,
-            unicodeEscapeSequence: false
-          }
-        );
-        var obfuscatedCode = obfuscationResult.getObfuscatedCode();
-        outputEl.textContent = obfuscatedCode;
-      } catch (error) {
-        console.error("Error during obfuscation: ", error);
-        outputEl.textContent = "Error during obfuscation: " + error;
-      }
-    });
-  </script>
+        try {
+          var obfuscationResult = JavaScriptObfuscator.obfuscate(
+            inputCode,
+            {
+              compact: true,
+              controlFlowFlattening: true,
+              controlFlowFlatteningThreshold: 1,
+              deadCodeInjection: true,
+              deadCodeInjectionThreshold: 1,
+              debugProtection: false,
+              debugProtectionInterval: 0,  // Gunakan 0 untuk menonaktifkan interval
+              disableConsoleOutput: false,
+              identifierNamesGenerator: 'mangled',
+              numbersToExpressions: true,
+              renameGlobals: false,
+              rotateStringArray: true,
+              selfDefending: true,
+              stringArray: true,
+              stringArrayEncoding: ['rc4'],
+              stringArrayThreshold: 1,
+              transformObjectKeys: true,
+              unicodeEscapeSequence: false
+            }
+          );
+          var obfuscatedCode = obfuscationResult.getObfuscatedCode();
+          outputEl.textContent = obfuscatedCode;
+        } catch (error) {
+          console.error("Error during obfuscation: ", error);
+          outputEl.textContent = "Error during obfuscation: " + error;
+        }
+      });
+
+      document.getElementById("copyBtn").addEventListener("click", function() {
+        var outputCode = document.getElementById("outputCode").textContent;
+        if (!outputCode) {
+          alert("Tidak ada output untuk disalin!");
+          return;
+        }
+        navigator.clipboard.writeText(outputCode)
+          .then(function() {
+            alert("Output berhasil disalin ke clipboard!");
+          })
+          .catch(function(err) {
+            alert("Gagal menyalin: " + err);
+          });
+      });
+
+      document.getElementById("downloadBtn").addEventListener("click", function() {
+        var outputCode = document.getElementById("outputCode").textContent;
+        if (!outputCode) {
+          alert("Tidak ada output untuk diunduh!");
+          return;
+        }
+        var blob = new Blob([outputCode], { type: 'text/plain' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "obfuscatedCode.js";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    </script>
+  </div>
 </body>
 </html>
