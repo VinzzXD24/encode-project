@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Encode System</title>
+  <style>
+    body {
+      font-family: Consolas, monospace;
+      background: #1a1a1a;
+      color: #ecf0f1;
+      padding: 20px;
+    }
+    textarea, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #3d3d3d;
+      border-radius: 4px;
+      background: #2d2d2d;
+      color: #f8f8f2;
+    }
+    button {
+      cursor: pointer;
+      background: #3498db;
+      text-transform: uppercase;
+      border: none;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+    }
+    .spinner {
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    pre {
+      background: #2d2d2d;
+      padding: 10px;
+      border: 1px solid #3d3d3d;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h1>Encode System</h1>
+  <p>Masukkan teks yang akan diencode:</p>
+  <textarea id="textInput" placeholder="Masukkan teks di sini..."></textarea>
+  <p>Pilih mode encoding:</p>
+  <select id="modeSelect">
+    <option value="Base64">Base64</option>
+    <option value="Hex">Hex</option>
+  </select>
+  <button id="encodeBtn">Encode</button>
+  
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Processing...</p>
+  </div>
+  
+  <h2>Hasil Encoding:</h2>
+  <pre id="output"></pre>
+  
+  <script>
+    /* --- Mulai kode Encode (Obfuscated) --- */
+    const _0x266dca = _0x394d;
+    (function(_0x35644c, _0x2bf644) {
+        const _0x7b2243 = _0x394d,
+              _0xad5d31 = _0x35644c();
+        while (!![]) {
+            try {
+                // Perhitungan dummy untuk mengacak array
+                const _0x3889fd = -parseInt(_0x7b2243(0xa0)) / 1 +
+                                  parseInt(_0x7b2243(0xa0)) / 3 +
+                                  parseInt(_0x7b2243(0xa1)) / 2;
+                if (_0x3889fd === _0x2bf644)
+                    break;
+                else
+                    _0xad5d31.push(_0xad5d31.shift());
+            } catch (_0x35fcd2) {
+                _0xad5d31.push(_0xad5d31.shift());
+            }
+        }
+    }(_0xobf, 0x12345));
+    
+    function _0xobf() {
+        const _0x589c7f = [
+            "encode",   // index 0 => _0x394d(0xa0) menghasilkan "encode"
+            "utf8",     // index 1 => _0x394d(0xa1) menghasilkan "utf8"
+            "Base64",   // index 2 => _0x394d(0xa2) menghasilkan "Base64"
+            "Hex"       // index 3 => _0x394d(0xa3) menghasilkan "Hex"
+        ];
+        _0xobf = function() { return _0x589c7f; };
+        return _0xobf();
+    }
+    
+    function _0x394d(_0x5c9705, _0x277c02) {
+        const _0x1c7751 = _0xobf();
+        return _0x394d = function(_0x394dc4, _0x5bcb04) {
+            _0x394dc4 = _0x394dc4 - 0xa0; // offset 0xa0 (160 desimal)
+            let _0x28be0f = _0x1c7751[_0x394dc4];
+            return _0x28be0f;
+        }, _0x394d(_0x5c9705, _0x277c02);
+    }
+    
+    async function encodeSystem(_0xinput, _0xmode) {
+        return new Promise((resolve, reject) => {
+            try {
+                let _0xencoded;
+                if (_0xmode === _0x394d(0xa2)) { // jika mode adalah "Base64"
+                    // Gunakan btoa dengan penanganan Unicode
+                    _0xencoded = btoa(unescape(encodeURIComponent(_0xinput)));
+                } else if (_0xmode === _0x394d(0xa3)) { // jika mode adalah "Hex"
+                    let hex = "";
+                    for (let i = 0; i < _0xinput.length; i++) {
+                        hex += _0xinput.charCodeAt(i).toString(16);
+                    }
+                    _0xencoded = hex;
+                } else {
+                    _0xencoded = _0xinput;
+                }
+                resolve(_0xencoded);
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+    /* --- Akhir kode Encode --- */
+    
+    // Event listener untuk tombol "Encode"
+    document.getElementById("encodeBtn").addEventListener("click", function() {
+      const text = document.getElementById("textInput").value;
+      const mode = document.getElementById("modeSelect").value;
+      const outputEl = document.getElementById("output");
+      const loadingEl = document.getElementById("loading");
+      outputEl.textContent = "";
+      
+      if (!text) {
+        alert("Masukkan teks terlebih dahulu!");
+        return;
+      }
+      
+      loadingEl.style.display = "block";
+      
+      // Simulasi delay 3 detik untuk efek loading
+      setTimeout(() => {
+        encodeSystem(text, mode)
+          .then(result => {
+            outputEl.textContent = result;
+            loadingEl.style.display = "none";
+          })
+          .catch(err => {
+            outputEl.textContent = "Error: " + err.message;
+            loadingEl.style.display = "none";
+          });
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
