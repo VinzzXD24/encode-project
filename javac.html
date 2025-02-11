@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Obfuscate Code</title>
+  <title>Obfuscate Code – Semirip Mungkin</title>
   <style>
     body {
       font-family: Consolas, monospace;
@@ -34,13 +34,15 @@
   </style>
 </head>
 <body>
-  <!-- Konten HTML -->
+  <h1>Obfuscate Code</h1>
+  <p>Masukkan kode yang ingin di-obfuscate:</p>
   <textarea id="inputCode" rows="10" placeholder="Masukkan kode di sini..."></textarea>
   <button id="obfuscateBtn">Obfuscate Code</button>
+  <h2>Obfuscated Output:</h2>
   <pre id="outputCode"></pre>
 
-  <!-- Sertakan pustaka JavaScript Obfuscator dari CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/javascript-obfuscator.min.js"></script>
+  <!-- Menggunakan unpkg CDN untuk memuat JavaScript Obfuscator -->
+  <script src="https://unpkg.com/javascript-obfuscator@4.0.2/dist/javascript-obfuscator.min.js"></script>
   <script>
     document.getElementById("obfuscateBtn").addEventListener("click", function() {
       var inputCode = document.getElementById("inputCode").value;
@@ -52,6 +54,7 @@
       }
       
       try {
+        // Opsi‑opsi diatur secara agresif untuk menghasilkan output yang mirip
         var obfuscationResult = JavaScriptObfuscator.obfuscate(
           inputCode,
           {
